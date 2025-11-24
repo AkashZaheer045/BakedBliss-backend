@@ -1,6 +1,6 @@
 const express = require('express');
 const { confirmOrder, viewOrderHistory, getOrderStatus } = require('../controllers/orderController');
-const authenticateToken = require('../middleware/authMiddleware'); // Firebase token verification
+const authenticateToken = require('../../../middleware/authMiddleware'); // Firebase token verification
 
 const router = express.Router();
 

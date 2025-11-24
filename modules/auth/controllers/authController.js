@@ -1,4 +1,4 @@
-const { db } = require('../config/firebaseConfig');
+const { db } = require('../../../config/firebaseConfig');
 
 // Helper functions to avoid duplication
 const createUser = async (userData) => {

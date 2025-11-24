@@ -1,7 +1,7 @@
 // addressRoutes.js
 const express = require('express');
 const router = express.Router();
-const authenticateToken= require('../middleware/authMiddleware'); // Assuming the middleware is already implemented
+const authenticateToken= require('../../../middleware/authMiddleware'); // Assuming the middleware is already implemented
 
 const {
   addAddress,

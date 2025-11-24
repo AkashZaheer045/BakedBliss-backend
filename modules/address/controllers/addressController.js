@@ -1,11 +1,11 @@
 // addressController.js
 
-const { db } = require('../config/firebaseConfig');
+const { db } = require('../../../config/firebaseConfig');
 
 // Add a new address
 const addAddress = async (req, res) => {
   try {
-    const { userId } = req.user; // userId from the verified token
+    const userId = req.user && (req.user.uid || req.user.userId);
     const { address } = req.body;
 
     if (!address) {
@@ -35,7 +35,7 @@ const addAddress = async (req, res) => {
 // Update an address
 const updateAddress = async (req, res) => {
   try {
-    const { userId } = req.user; // userId from the verified token
+  const userId = req.user && (req.user.uid || req.user.userId);
     const { addressId, updatedAddress } = req.body;
 
     if (!addressId || !updatedAddress) {
@@ -66,7 +66,7 @@ const updateAddress = async (req, res) => {
 // Delete an address
 const deleteAddress = async (req, res) => {
   try {
-    const { userId } = req.user; // userId from the verified token
+  const userId = req.user && (req.user.uid || req.user.userId);
     const { addressId } = req.body;
 
     if (!addressId) {
@@ -95,7 +95,7 @@ const deleteAddress = async (req, res) => {
 // View all addresses
 const viewAddresses = async (req, res) => {
   try {
-    const { userId } = req.user; // userId from the verified token
+    const userId = req.user && (req.user.uid || req.user.userId);
 
     const userRef = db.collection('User').doc(userId);
     const userSnapshot = await userRef.get();

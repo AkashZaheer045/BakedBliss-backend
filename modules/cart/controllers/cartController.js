@@ -1,4 +1,4 @@
-const { db } = require('../config/firebaseConfig');
+const { db } = require('../../../config/firebaseConfig');
 
 // Add item to the cart
 const addItemToCart = async (req, res) => {

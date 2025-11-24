@@ -1,7 +1,7 @@
 const express = require('express');
 const { addItemToCart, viewCart, updateCartItem, removeItemFromCart } = require('../controllers/cartController'); // Make sure this path is correct
 
-const authenticateToken = require('../middleware/authMiddleware'); // Make sure middleware is properly imported
+const authenticateToken = require('../../../middleware/authMiddleware'); // Make sure middleware is properly imported
 
 const router = express.Router();
 

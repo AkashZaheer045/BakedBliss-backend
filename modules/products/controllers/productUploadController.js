@@ -1,5 +1,4 @@
-// controllers/productUploadController.js
-const { db } = require('../config/firebaseConfig'); // Adjust the path as necessary
+const { db } = require('../../../config/firebaseConfig'); // Adjust the path as necessary
 
 // Function to create a new product
 const createProduct = async (req, res) => {

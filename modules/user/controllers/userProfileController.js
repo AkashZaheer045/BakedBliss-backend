@@ -1,4 +1,4 @@
-const { db } = require('../config/firebaseConfig'); // Import Firestore
+const { db } = require('../../../config/firebaseConfig'); // Import Firestore
 
 // Get user profile function
 const getUserProfile = async (req, res) => {

@@ -1,4 +1,4 @@
-const { db } = require('../config/firebaseConfig'); // Assuming Firestore is used for storage
+const { db } = require('../../../config/firebaseConfig'); // Assuming Firestore is used for storage
 
 // Handle "Contact Us" form submission
 const submitContactForm = async (req, res) => {

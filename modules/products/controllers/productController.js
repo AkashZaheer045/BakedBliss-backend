@@ -1,4 +1,4 @@
-const { db } = require('../config/firebaseConfig'); // Import the Firestore config
+const { db } = require('../../../config/firebaseConfig'); // Import the Firestore config
 
 // Search products by query with pagination
 const searchProducts = async (req, res) => {

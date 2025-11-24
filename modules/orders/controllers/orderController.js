@@ -1,4 +1,4 @@
-const { db } = require('../config/firebaseConfig');
+const { db } = require('../../../config/firebaseConfig');
 
 // Confirm and place an order
 const confirmOrder = async (req, res) => {

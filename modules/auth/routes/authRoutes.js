@@ -1,7 +1,7 @@
 const express = require('express');
 const { signUpUser, signInUser, socialLogin } = require('../controllers/authController');
-const { getUserProfile } = require('../controllers/userProfileController'); // Import getUserProfile
-const verifyFirebaseToken = require('../middleware/authMiddleware.js'); // Import middleware for token verification
+const { getUserProfile } = require('../../user/controllers/userProfileController'); // Import getUserProfile
+const verifyFirebaseToken = require('../../../middleware/authMiddleware.js'); // Import middleware for token verification
 const router = express.Router();
 
 // Route for sign-up
