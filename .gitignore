@@ -4,3 +4,4 @@ baked-blissed-firebase-adminsdk-qk2zr-3431647e6b.json
 *.key.json
 /secrets/
 node_modules/
+/config/firebaseClient.js
