@@ -1,6 +1,6 @@
 const express = require('express');
 const { createProduct } = require('../controllers/productUploadController');
-const { searchProducts, getProductById, getProductsByCategory } = require('../controllers/productController'); // Existing search controller
+const { searchProducts, getProductById, getProductsByCategory, listProducts, getCategories } = require('../controllers/productController'); // Existing search controller
 const { getTrendingProducts, getRecommendations } = require('../controllers/trendingProductsController');
 const authenticateToken = require('../../../middleware/authMiddleware.js');
 const router = express.Router();
@@ -8,6 +8,12 @@ const router = express.Router();
 
 // Router for searching products
 router.get('/search', searchProducts); // Keep the existing search route
+
+// List products (paginated / filtered)
+router.get('/', listProducts);
+
+// Categories metadata
+router.get('/categories', getCategories);
 
 router.post('/upload', createProduct);
 

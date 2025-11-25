@@ -12,6 +12,7 @@ const productRoutes = require('./modules/products/routes/productRoutes');
 const cartRoutes = require('./modules/cart/routes/cartRoutes');
 const orderRoutes = require('./modules/orders/routes/orderRoutes');
 const addressRoutes = require('./modules/address/routes/addressRoutes');
+const userRoutes = require('./modules/user/routes/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +37,7 @@ app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/order', orderRoutes);
 app.use('/api/v1/address', addressRoutes);
+app.use('/api/v1/users', userRoutes);
 
 
 // Error handling middleware
