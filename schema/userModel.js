@@ -1,6 +1,20 @@
-// Firebase doesn't require a model schema like Mongoose
 const db = require('../config/firebaseConfig');
-
 const User = db.collection('User');
 
-module.exports = User; // Export the User collection for use in controllers
+// User data structure helper
+function createUserData({ uid, name, email, phone, address, role = 'user', createdAt = new Date() }) {
+  return {
+    uid,
+    name,
+    email,
+    phone,
+    address,
+    role,
+    createdAt,
+  };
+}
+
+module.exports = {
+  User,
+  createUserData,
+};
