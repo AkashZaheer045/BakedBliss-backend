@@ -124,50 +124,56 @@ The system provides comprehensive functionality including user authentication, p
 
 ## 📚 API Documentation
 
+### Base URL
+```
+http://localhost:3000/api/v1
+```
+
+
 ### Authentication Endpoints
 ```
-POST /baseApi/auth/users/register     - User registration
-POST /baseApi/auth/users/signin       - User sign-in
-POST /baseApi/auth/users/social-login - Social media login
-GET  /baseApi/auth/users/profile/:id  - Get user profile (Protected)
+POST /users/register                - User registration
+POST /users/signin                  - User sign-in
+POST /users/social-login            - Social media login
+GET  /users/profile/:user_id        - Get user profile (Protected)
 ```
 
 ### Product Endpoints
 ```
-GET  /api/v1/products/search         - Search products
-GET  /api/v1/products/:id            - Get product by ID
-GET  /api/v1/products/category/:name - Get products by category
-GET  /api/v1/products/trending       - Get trending products
-GET  /api/v1/products/:userId        - Get recommendations (Protected)
-POST /api/v1/products/upload         - Upload new product
+GET  /search                        - Search products
+POST /upload                        - Upload new product
+GET  /:product_id                   - Get product by ID
+GET  /category/:category_name       - Get products by category
+GET  /trending                      - Get trending products
+GET  /recommendations/:userId       - Get recommendations (Protected)
 ```
 
 ### Cart Endpoints
 ```
-POST   /user/cart/add                - Add item to cart (Protected)
-GET    /user/cart/view               - View cart (Protected)
-PUT    /user/cart/update             - Update cart item (Protected)
-DELETE /user/cart/remove             - Remove item from cart (Protected)
+POST   /add                         - Add item to cart (Protected)
+GET    /view                        - View cart (Protected)
+PUT    /update                      - Update cart item (Protected)
+DELETE /remove                      - Remove item from cart (Protected)
 ```
 
 ### Order Endpoints
 ```
-POST /user/order/confirm             - Place order (Protected)
-GET  /user/order/history             - Order history (Protected)
-GET  /user/order/status/:orderId     - Order status (Protected)
+POST /confirm                       - Place order (Protected)
+GET  /history                       - Order history (Protected)
+GET  /status/:orderId               - Order status (Protected)
 ```
 
 ### Address Endpoints
 ```
-GET    /user/address/list            - List addresses (Protected)
-POST   /user/address/add             - Add address (Protected)
-PUT    /user/address/update/:id      - Update address (Protected)
-DELETE /user/address/delete/:id      - Delete address (Protected)
+POST   /add                         - Add address (Protected)
+PUT    /update                      - Update address (Protected)
+DELETE /delete                      - Delete address (Protected)
+GET    /view                        - View addresses (Protected)
 ```
 
-### Support Endpoints
+### Contact Endpoints
 ```
-POST /api/contact                    - Submit contact form
+POST /contact-us                    - Submit contact form
 ```
 
 ## 🚀 Installation
