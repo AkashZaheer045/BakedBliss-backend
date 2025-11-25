@@ -1,38 +1,73 @@
-const admin = require('firebase-admin');
 const path = require('path');
 const fs = require('fs');
 
-// Initialize Firebase Admin SDK with flexible credential sources:
-// 1. If FIREBASE_ADMIN_SDK_PATH env var is set, load that JSON file
-// 2. Else if GOOGLE_APPLICATION_CREDENTIALS is set, the Admin SDK will use it automatically
-// 3. Else attempt default initializeApp() (may work on GCP environments)
+// Set environment variables early if service account path is available
+if (process.env.FIREBASE_ADMIN_SDK_PATH) {
+  const sdkPath = path.resolve(process.env.FIREBASE_ADMIN_SDK_PATH);
+  if (fs.existsSync(sdkPath)) {
+    try {
+      const serviceAccount = require(sdkPath);
+      // Set environment variables BEFORE requiring firebase-admin
+      process.env.GOOGLE_CLOUD_PROJECT = serviceAccount.project_id;
+      process.env.GCLOUD_PROJECT = serviceAccount.project_id;
+      process.env.FIREBASE_CONFIG = JSON.stringify({
+        projectId: serviceAccount.project_id,
+        databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`
+      });
+      console.log(`🔧 Environment variables set for project: ${serviceAccount.project_id}`);
+    } catch (err) {
+      console.error('Failed to load service account for environment setup:', err.message);
+    }
+  }
+}
+
+const admin = require('firebase-admin');
 
 try {
-  if (process.env.FIREBASE_ADMIN_SDK_PATH) {
-    const sdkPath = path.resolve(process.env.FIREBASE_ADMIN_SDK_PATH);
-    if (!fs.existsSync(sdkPath)) {
-      throw new Error(`FIREBASE_ADMIN_SDK_PATH set but file not found: ${sdkPath}`);
+  // Check if Firebase app is already initialized to avoid conflicts
+  if (!admin.apps.length) {
+    if (process.env.FIREBASE_ADMIN_SDK_PATH) {
+      const sdkPath = path.resolve(process.env.FIREBASE_ADMIN_SDK_PATH);
+      if (!fs.existsSync(sdkPath)) {
+        throw new Error(`FIREBASE_ADMIN_SDK_PATH set but file not found: ${sdkPath}`);
+      }
+      const serviceAccount = require(sdkPath);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        projectId: serviceAccount.project_id, // Explicitly set project ID
+      });
+      console.log('✅ Firebase Admin SDK initialized with service account credentials');
+      console.log(`📍 Project ID: ${serviceAccount.project_id}`);
+      
+      // Initialize Firestore with explicit project ID
+      const db = admin.firestore();
+      db.settings({
+        projectId: serviceAccount.project_id,
+      });
+      console.log('Connected to Firestore Database');
+      module.exports = { admin, db };
+      return; // Exit early to avoid creating db again below
+    } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      // Let firebase-admin pick up the credentials from GOOGLE_APPLICATION_CREDENTIALS
+      admin.initializeApp();
+      console.log('✅ Firebase Admin SDK initialized with GOOGLE_APPLICATION_CREDENTIALS');
+    } else {
+      // Try to initialize with default credentials (useful on GCP or when ADC is available)
+      console.warn('No explicit Firebase admin credentials provided. Calling initializeApp() and relying on default credentials.');
+      admin.initializeApp();
     }
-    const serviceAccount = require(sdkPath);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    console.log('✅ Firebase Admin SDK initialized with service account credentials');
-  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    // Let firebase-admin pick up the credentials from GOOGLE_APPLICATION_CREDENTIALS
-    admin.initializeApp();
-    console.log('✅ Firebase Admin SDK initialized with GOOGLE_APPLICATION_CREDENTIALS');
+    
+    // Create Firestore instance for other initialization methods
+    const db = admin.firestore();
+    console.log('Connected to Firestore Database');
+    module.exports = { admin, db };
   } else {
-    // Try to initialize with default credentials (useful on GCP or when ADC is available)
-    // console.warn('No explicit Firebase admin credentials provided. Calling initializeApp() and relying on default credentials.');
-    admin.initializeApp();
+    console.log('✅ Firebase Admin SDK already initialized');
+    const db = admin.firestore();
+    module.exports = { admin, db };
   }
 } catch (err) {
   console.error('Failed to initialize Firebase Admin SDK:', err.message);
-  // still attempt to initialize without credentials to allow other parts of app to load
-  try { admin.initializeApp(); } catch (e) { /* ignore */ }
+  // Don't try to initialize again in catch block as it can cause conflicts
+  throw err; // Re-throw to prevent app from starting with broken Firebase
 }
-
-const db = admin.firestore();
-console.log('Connected to Firestore Database');
-module.exports = { admin, db };

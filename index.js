@@ -1,3 +1,6 @@
+// Load environment variables FIRST before any other imports
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');  // For enabling CORS
@@ -9,8 +12,6 @@ const productRoutes = require('./modules/products/routes/productRoutes');
 const cartRoutes = require('./modules/cart/routes/cartRoutes');
 const orderRoutes = require('./modules/orders/routes/orderRoutes');
 const addressRoutes = require('./modules/address/routes/addressRoutes');
-
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,12 +30,12 @@ app.get('/health', (req, res) => {
 
 
 // All routes of the application main functionality
-app.use('/baseApi/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
-app.use('/api', contactRoutes);
-app.use('/user/cart', cartRoutes);
-app.use('/user/order', orderRoutes);
-app.use('/user/address', addressRoutes);
+app.use('/api/v1/contact', contactRoutes);
+app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/order', orderRoutes);
+app.use('/api/v1/address', addressRoutes);
 
 
 // Error handling middleware

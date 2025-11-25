@@ -1,4 +1,5 @@
 const { db } = require('../../../config/firebaseConfig');
+const crypto = require('crypto');
 
 // Helper functions to avoid duplication
 const createUser = async (userData) => {
@@ -12,19 +13,29 @@ const updateUserPushToken = async (userId, pushToken) => {
 // Sign-up function
 const signUpUser = async (req, res) => {
   try {
-    const { userId, fullName, email, profilePicture, addresses, selectedAddressId, phoneNumber, pushToken } = req.body;
+    const { fullName, email, profilePicture, addresses, selectedAddressId, phoneNumber, pushToken } = req.body;
 
-    // Input validation (add more as necessary)
-    if (!userId || !fullName) {
-      return res.status(400).json({ message: "Invalid input: userId and fullName are required." });
+    // Input validation (userId is now auto-generated)
+    if (!fullName) {
+      return res.status(400).json({ message: "Invalid input: fullName is required." });
     }
+
+    // Generate unique userId using timestamp + random string
+    const timestamp = Date.now().toString();
+    const randomPart = Math.random().toString(36).substring(2, 8);
+    const userId = `user_${timestamp}_${randomPart}`;
 
     const userSnapshot = await db.collection('User').doc(userId).get();
     if (userSnapshot.exists) {
-      if (pushToken) {
-        await updateUserPushToken(userId, pushToken);
+      // If somehow the ID already exists (very unlikely), generate a new one
+      const newTimestamp = Date.now().toString();
+      const newRandomPart = Math.random().toString(36).substring(2, 8);
+      const newUserId = `user_${newTimestamp}_${newRandomPart}`;
+      const newUserSnapshot = await db.collection('User').doc(newUserId).get();
+      if (newUserSnapshot.exists) {
+        return res.status(500).json({ message: "failed", error: "Unable to generate unique user ID. Please try again." });
       }
-      return res.status(409).json({ message: "failed", error: "User already exists." });
+      userId = newUserId;
     }
 
     const newUser = {
