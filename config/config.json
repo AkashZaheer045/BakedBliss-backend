@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "akash",
+    "password": "akash123",
+    "database": "baked_bliss_dev",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "staging": {
+    "username": "akash",
+    "password": "akash123",
+    "database": "baked_bliss_staging",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "akash",
+    "password": "akash123",
+    "database": "baked_bliss_prod",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql"
+  }
+}

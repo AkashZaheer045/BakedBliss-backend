@@ -1,11 +1,12 @@
 # 🍰 BakedBliss Backend API
 
-[![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-green.svg)](https://nodejs.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-4.21.0-blue.svg)](https://expressjs.com/)
-[![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange.svg)](https://firebase.google.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)](https://www.mysql.com/)
+[![Sequelize](https://img.shields.io/badge/Sequelize-6.33.0-52B0E7.svg)](https://sequelize.org/)
 [![License](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
 
-A robust, scalable backend API for the **BakedBliss** e-commerce platform - your complete solution for online bakery management. Built with modern technologies to provide seamless user experiences for browsing, ordering, and managing baked goods, spices, and more.
+A robust, scalable backend API for the **BakedBliss** e-commerce platform - your complete solution for online bakery management. Built with modern technologies following Node.js standardization best practices to provide seamless user experiences for browsing, ordering, and managing baked goods, spices, and more.
 
 ## 📖 About BakedBliss Backend
 
@@ -23,11 +24,12 @@ The BakedBliss backend is built to handle the complete customer journey from pro
 
 ### 🔧 **Technical Excellence**
 Built with modern web technologies and best practices, the BakedBliss backend leverages:
-- **Firebase Firestore**: NoSQL cloud database for flexible data management
+- **MySQL Database**: Reliable relational database for structured data management
+- **Sequelize ORM**: Modern ORM for elegant database interactions
 - **Express.js Framework**: Fast, unopinionated web framework for Node.js
 - **JWT Authentication**: Secure token-based user authentication
 - **RESTful API Design**: Clean, predictable API endpoints
-- **Real-time Capabilities**: Push notifications and live updates
+- **Standardized Structure**: Follows Node.js best practices and conventions
 
 ### 🌟 **Key Capabilities**
 The system provides comprehensive functionality including user authentication, product management, shopping cart operations, order processing, address management, and customer support. Each component is designed with scalability, security, and performance in mind, ensuring a smooth experience for both customers and business operators.
@@ -37,12 +39,12 @@ The system provides comprehensive functionality including user authentication, p
 - [Features](#-features)
 - [Architecture](#-architecture)
 - [Technology Stack](#-technology-stack)
-- [API Documentation](#-api-documentation)
 - [Installation](#-installation)
 - [Configuration](#-configuration)
-- [Usage](#-usage)
 - [Project Structure](#-project-structure)
+- [API Documentation](#-api-documentation)
 - [Security Features](#-security-features)
+- [Development](#-development)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -50,35 +52,38 @@ The system provides comprehensive functionality including user authentication, p
 
 ### 🔐 Authentication & User Management
 - **Multi-Platform Authentication**: Email, Google, and Facebook login
-- **Secure User Profiles**: Complete user data management with Firebase
-- **Real-time Notifications**: Push token support for instant updates
-- **Social Login Integration**: Seamless OAuth with major platforms
+- **Secure User Profiles**: Complete user data management with MySQL
 - **JWT Token Security**: Protected routes with middleware verification
+- **Social Login Integration**: Seamless OAuth with major platforms
+- **User Favorites**: Save and manage favorite products
 
 ### 🛍️ E-commerce Core Features
 - **Product Catalog**: Comprehensive product management system
 - **Advanced Search**: Search by title and category with pagination
 - **Category Filtering**: Browse products by specific categories
 - **Product Details**: Rich product information with ingredients and allergens
-- **Trending Products**: AI-powered product recommendations
+- **Trending Products**: Popular product recommendations
+- **Stock Management**: Real-time inventory tracking
 
 ### 🛒 Shopping Cart System
 - **Dynamic Cart Management**: Add, update, and remove items
 - **Quantity Control**: Flexible quantity management
 - **User-specific Carts**: Individual cart for each user
 - **Real-time Updates**: Instant cart synchronization
+- **Cart Persistence**: Saved cart across sessions
 
 ### 📦 Order Management
 - **Order Processing**: Complete order lifecycle management
 - **Order History**: Comprehensive order tracking
 - **Status Updates**: Real-time order status tracking
 - **Delivery Management**: Address-based delivery system
+- **Order Details**: Complete order information with items
 
 ### 🏠 Address Management
 - **Multiple Addresses**: Store multiple delivery addresses
 - **Default Address**: Set preferred delivery location
 - **Address Selection**: Choose address per order
-- **Geolocation Support**: Location-based services
+- **CRUD Operations**: Full address management
 
 ### 💬 Customer Support
 - **Contact System**: Handle customer inquiries
@@ -90,99 +95,53 @@ The system provides comprehensive functionality including user authentication, p
 ### System Overview
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend API   │    │   Firebase      │
-│   (Mobile/Web)  │◄──►│   (Node.js)     │◄──►│   (Firestore)   │
+│   Frontend      │    │   Backend API   │    │   MySQL         │
+│   (Mobile/Web)  │◄──►│   (Node.js)     │◄──►│   (Database)    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                               │
                               ▼
                        ┌─────────────────┐
-                       │   Stripe        │
-                       │   (Payments)    │
+                       │   Sequelize     │
+                       │   (ORM)         │
                        └─────────────────┘
 ```
 
 ### Data Flow
 1. **Client Request** → Express.js Router
-2. **Authentication** → Firebase Auth + JWT Verification
-3. **Business Logic** → Controller Layer
-4. **Data Persistence** → Firebase Firestore
-5. **Response** → JSON API Response
+2. **Authentication** → JWT Verification Middleware
+3. **Routing** → Module-specific Routes
+4. **Business Logic** → Service Layer
+5. **Data Access** → Sequelize ORM
+6. **Database** → MySQL
+7. **Response** → Standardized JSON Response
+
+### Architecture Principles
+- **Vertical Slice Architecture**: Features organized by domain modules
+- **Separation of Concerns**: Clear separation between routes, controllers, services
+- **Centralized Error Handling**: Consistent error responses
+- **Standardized Responses**: Uniform API response structure
 
 ## 🛠️ Technology Stack
 
 | Component | Technology | Version | Purpose |
 |-----------|------------|---------|---------|
-| **Runtime** | Node.js | 18.x | JavaScript runtime |
+| **Runtime** | Node.js | 20.x | JavaScript runtime (LTS) |
 | **Framework** | Express.js | 4.21.0 | Web application framework |
-| **Database** | Firebase Firestore | Latest | NoSQL cloud database |
-| **Authentication** | Firebase Auth | Latest | User authentication |
+| **Database** | MySQL | 8.0+ | Relational database |
+| **ORM** | Sequelize | 6.33.0 | Object-relational mapping |
+| **Authentication** | JWT | 9.0.2 | Token-based authentication |
 | **Security** | Helmet.js | 8.0.0 | HTTP headers security |
 | **CORS** | CORS | 2.8.5 | Cross-origin resource sharing |
 | **Logging** | Morgan | 1.10.0 | HTTP request logger |
 | **Environment** | dotenv | 16.4.5 | Environment variables |
 | **Development** | Nodemon | 3.1.7 | Auto-restart development server |
 
-## 📚 API Documentation
-
-### Base URL
-```
-http://localhost:3000/api/v1
-```
-
-
-### Authentication Endpoints
-```
-POST /users/register                - User registration
-POST /users/signin                  - User sign-in
-POST /users/social-login            - Social media login
-GET  /users/profile/:user_id        - Get user profile (Protected)
-```
-
-### Product Endpoints
-```
-GET  /search                        - Search products
-POST /upload                        - Upload new product
-GET  /:product_id                   - Get product by ID
-GET  /category/:category_name       - Get products by category
-GET  /trending                      - Get trending products
-GET  /recommendations/:userId       - Get recommendations (Protected)
-```
-
-### Cart Endpoints
-```
-POST   /add                         - Add item to cart (Protected)
-GET    /view                        - View cart (Protected)
-PUT    /update                      - Update cart item (Protected)
-DELETE /remove                      - Remove item from cart (Protected)
-```
-
-### Order Endpoints
-```
-POST /confirm                       - Place order (Protected)
-GET  /history                       - Order history (Protected)
-GET  /status/:orderId               - Order status (Protected)
-```
-
-### Address Endpoints
-```
-POST   /add                         - Add address (Protected)
-PUT    /update                      - Update address (Protected)
-DELETE /delete                      - Delete address (Protected)
-GET    /view                        - View addresses (Protected)
-```
-
-### Contact Endpoints
-```
-POST /contact-us                    - Submit contact form
-```
-
 ## 🚀 Installation
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn package manager
-- Firebase project with Firestore enabled
-- Firebase service account key
+- Node.js (v20 or higher) - [Download](https://nodejs.org/)
+- MySQL (v8.0 or higher) - [Download](https://www.mysql.com/)
+- npm (comes with Node.js)
 
 ### Step 1: Clone the Repository
 ```bash
@@ -195,146 +154,338 @@ cd BakedBliss-backend
 npm install
 ```
 
-### Step 3: Environment Configuration
-Create a `.env` file in the root directory:
-```env
-PORT=3000
-NODE_ENV=development
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY_ID=your-private-key-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Private Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=your-client-email
-FIREBASE_CLIENT_ID=your-client-id
-FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
-FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
-FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
-FIREBASE_CLIENT_X509_CERT_URL=your-cert-url
+### Step 3: Database Setup
+```bash
+# Create MySQL database
+mysql -u root -p
+CREATE DATABASE bakedbliss;
+exit;
+
+# Run migrations
+npm run db:migrate
+
+# (Optional) Seed database with sample data
+npm run db:seed
 ```
 
-### Step 4: Firebase Configuration
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable Firestore Database
-3. Generate a service account key
-4. Update the `firebaseConfig.js` file with your credentials
+### Step 4: Environment Configuration
+Create a `.env` file in the root directory:
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=bakedbliss
+DB_USER=root
+DB_PASSWORD=your_password
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_EXPIRES_IN=24h
+
+# Optional: Additional Configuration
+LOG_LEVEL=info
+```
 
 ### Step 5: Start the Server
 ```bash
 # Development mode (with auto-restart)
-npm start
+npm run dev
 
 # Production mode
-NODE_ENV=production node index.js
+npm start
 ```
+
+The server will start on `http://localhost:3000`
 
 ## ⚙️ Configuration
 
-### Firebase Setup
-```javascript
-// config/firebaseConfig.js
-const admin = require('firebase-admin');
-const serviceAccount = require('./path-to-your-service-account.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const db = admin.firestore();
-module.exports = { admin, db };
-```
-
 ### Environment Variables
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `PORT` | Server port number | Yes |
-| `NODE_ENV` | Environment (development/production) | Yes |
-| `FIREBASE_*` | Firebase configuration variables | Yes |
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `PORT` | Server port number | No | 3000 |
+| `NODE_ENV` | Environment (development/production) | No | development |
+| `DB_HOST` | MySQL host | Yes | localhost |
+| `DB_PORT` | MySQL port | No | 3306 |
+| `DB_NAME` | Database name | Yes | bakedbliss |
+| `DB_USER` | Database user | Yes | root |
+| `DB_PASSWORD` | Database password | Yes | - |
+| `JWT_SECRET` | JWT signing secret | Yes | - |
+| `JWT_EXPIRES_IN` | JWT expiration time | No | 24h |
+
+### Database Configuration
+The database configuration is managed in `config/database.js`. It supports multiple environments:
+- **Development**: Local MySQL instance
+- **Production**: Production database with connection pooling
+- **Test**: Separate test database
 
 ## 📁 Project Structure
 
 ```
 BakedBliss-backend/
-├── config/
-│   └── firebaseConfig.js          # Firebase configuration
-├── controllers/
-│   ├── authController.js          # Authentication logic
-│   ├── productController.js       # Product management
-│   ├── cartController.js          # Shopping cart logic
-│   ├── orderController.js         # Order processing
-│   ├── addressController.js       # Address management
-│   ├── contactController.js       # Customer support
-│   ├── productUploadController.js # Product upload
-│   ├── trendingProductsController.js # Recommendations
-│   └── userProfileController.js   # User profile management
-├── middleware/
-│   └── authMiddleware.js          # JWT token verification
-├── models/
-│   ├── productsModel.js           # Product data model
-│   └── userModel.js              # User data model
-├── routes/
-│   ├── authRoutes.js             # Authentication routes
-│   ├── productRoutes.js          # Product routes
-│   ├── cartRoutes.js             # Cart routes
-│   ├── orderRoutes.js            # Order routes
-│   ├── addressRoutes.js          # Address routes
-│   └── contactRoutes.js          # Contact routes
-├── index.js                      # Main application entry
-├── package.json                  # Dependencies and scripts
-└── README.md                     # Project documentation
+├── app.js                          # Main application entry point
+├── package.json                    # Dependencies and scripts
+├── .nvmrc                          # Node.js version specification
+├── .env                            # Environment variables (not in git)
+├── .env.example                    # Environment template
+│
+├── src/                            # Source code
+│   └── modules/                    # Feature modules (vertical slices)
+│       ├── auth/                   # Authentication module
+│       │   ├── app.js             # Module entry point
+│       │   ├── controllers/       # HTTP request handlers
+│       │   ├── routes/            # Route definitions
+│       │   ├── services/          # Business logic
+│       │   └── validations/       # Input validation
+│       ├── products/              # Products module
+│       │   ├── controllers/
+│       │   │   ├── productController.js
+│       │   │   ├── productUploadController.js
+│       │   │   └── trendingProductsController.js
+│       │   ├── routes/
+│       │   ├── services/
+│       │   └── validations/
+│       ├── cart/                  # Shopping cart module
+│       ├── orders/                # Order management module
+│       ├── address/               # Address management module
+│       ├── contact/               # Customer support module
+│       └── user/                  # User profile module
+│           ├── controllers/
+│           │   ├── userProfileController.js
+│           │   └── favoritesController.js
+│           ├── routes/
+│           ├── services/
+│           └── validations/
+│
+├── db/                            # Database layer
+│   ├── schemas/                   # Sequelize model definitions
+│   │   ├── users.js
+│   │   ├── products.js
+│   │   ├── orders.js
+│   │   ├── carts.js
+│   │   ├── contact_messages.js
+│   │   └── favorites.js
+│   ├── sequelize/                 # Sequelize configuration
+│   │   ├── associations.js       # Model associations
+│   │   ├── connection.js         # Database connection
+│   │   ├── instance.js           # Sequelize instance
+│   │   └── sequelize.js          # Sequelize setup
+│   └── migrations/                # Database migrations
+│
+├── middleware/                    # Cross-cutting middleware
+│   ├── authMiddleware.js         # JWT authentication
+│   └── response_handler.js       # Centralized error handling
+│
+├── utils/                         # Framework-agnostic utilities
+│   ├── response.js               # Standardized response helpers
+│   └── custom_exceptions.json    # Error code definitions
+│
+├── helpers/                       # Pure utility functions
+│   └── pagination.js             # Pagination helpers
+│
+├── config/                        # Configuration
+│   ├── database.js               # Database configuration
+│   └── sequelizeConfig.js        # Sequelize initialization
+│
+├── views/                         # Templates
+│   └── emails/                   # Email templates
+│
+├── docs/                          # Documentation
+│   └── nodejs-standardization.md # Coding standards
+│
+└── scripts/                       # Utility scripts
+    └── seedDatabase.js           # Database seeding
 ```
+
+### Module Structure
+Each module follows a consistent structure:
+```
+module-name/
+├── app.js              # Module exports
+├── controllers/        # HTTP request handlers (thin layer)
+├── routes/            # Route definitions
+├── services/          # Business logic (to be implemented)
+└── validations/       # Input validation schemas (to be implemented)
+```
+
+## 📚 API Documentation
+
+### Base URL
+```
+http://localhost:3000/api/v1
+```
+
+### Response Format
+All API responses follow a standardized format:
+```json
+{
+  "success": true,
+  "data": { },
+  "meta": {
+    "pagination": { }
+  }
+}
+```
+
+Error responses:
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "code": "ERROR_CODE",
+      "message": "Error description"
+    }
+  ],
+  "meta": {
+    "timestamp": "2025-11-27T12:00:00.000Z",
+    "path": "/api/v1/endpoint"
+  }
+}
+```
+
+### Authentication Endpoints
+```
+POST   /api/v1/auth/users/register        - User registration
+POST   /api/v1/auth/users/signin          - User sign-in
+POST   /api/v1/auth/users/social-login    - Social media login
+GET    /api/v1/auth/users/profile/:id     - Get user profile (Protected)
+```
+
+### Product Endpoints
+```
+GET    /api/v1/products/search            - Search products
+POST   /api/v1/products/upload            - Upload new product (Admin)
+GET    /api/v1/products/:product_id       - Get product by ID
+GET    /api/v1/products/category/:name    - Get products by category
+GET    /api/v1/products/trending          - Get trending products
+```
+
+### Cart Endpoints
+```
+POST   /api/v1/cart/add                   - Add item to cart (Protected)
+GET    /api/v1/cart/view                  - View cart (Protected)
+PUT    /api/v1/cart/update                - Update cart item (Protected)
+DELETE /api/v1/cart/remove                - Remove item from cart (Protected)
+```
+
+### Order Endpoints
+```
+POST   /api/v1/order/confirm              - Place order (Protected)
+GET    /api/v1/order/history              - Order history (Protected)
+GET    /api/v1/order/status/:orderId      - Order status (Protected)
+```
+
+### Address Endpoints
+```
+POST   /api/v1/address/add                - Add address (Protected)
+PUT    /api/v1/address/update             - Update address (Protected)
+DELETE /api/v1/address/delete             - Delete address (Protected)
+GET    /api/v1/address/view               - View addresses (Protected)
+```
+
+### User Endpoints
+```
+GET    /api/v1/users/favorites            - Get user favorites (Protected)
+POST   /api/v1/users/favorites/add        - Add to favorites (Protected)
+DELETE /api/v1/users/favorites/remove     - Remove from favorites (Protected)
+```
+
+### Contact Endpoints
+```
+POST   /api/v1/contact/contact-us         - Submit contact form
+```
+
+For detailed API documentation with request/response examples, see [ENDPOINTS.md](ENDPOINTS.md)
 
 ## 🔒 Security Features
 
 ### Authentication & Authorization
-- **Firebase Authentication**: Secure user authentication
-- **JWT Token Verification**: Protected route middleware
+- **JWT Token Verification**: All protected routes require valid JWT tokens
+- **Token Expiration**: Automatic token expiration and refresh
+- **Password Security**: Secure password hashing (to be implemented)
 - **Social Login Security**: OAuth 2.0 implementation
-- **Token Expiration**: Automatic token refresh
 
 ### Data Protection
-- **Input Validation**: Request data sanitization
-- **CORS Protection**: Cross-origin request handling
-- **Helmet.js**: HTTP security headers
-- **Error Handling**: Secure error responses
+- **Input Validation**: Request data sanitization (to be implemented)
+- **CORS Protection**: Configured cross-origin request handling
+- **Helmet.js**: Security HTTP headers
+- **SQL Injection Prevention**: Sequelize ORM parameterized queries
+- **Error Handling**: Secure error responses without sensitive data
 
 ### Database Security
-- **Firebase Security Rules**: Database access control
+- **Connection Pooling**: Optimized database connections
 - **Encrypted Connections**: Secure data transmission
-- **User Isolation**: Data separation by user
+- **User Isolation**: Data separation by user ID
+- **Prepared Statements**: Protection against SQL injection
 
-## 🧪 Testing
+### Best Practices
+- Environment variables for sensitive data
+- No credentials in codebase
+- Centralized error handling
+- Standardized response format
 
-### API Testing
+## 🧪 Development
+
+### Available Scripts
+```bash
+# Development with hot reload
+npm run dev
+
+# Production mode
+npm start
+
+# Database migrations
+npm run db:migrate          # Run migrations
+npm run db:migrate:undo     # Rollback last migration
+npm run db:seed             # Seed database
+```
+
+### Adding a New Module
+1. Create module directory: `src/modules/new-module/`
+2. Add required folders:
+   ```bash
+   mkdir -p src/modules/new-module/{controllers,routes,services,validations}
+   ```
+3. Create `app.js` in the module
+4. Implement routes, controllers, services
+5. Register routes in main `app.js`
+
+### Code Standards
+This project follows the [Node.js Standardization Guide](docs/nodejs-standardization.md):
+- CommonJS modules (`require`/`module.exports`)
+- Async/await for asynchronous operations
+- Centralized error handling
+- Standardized response helpers
+- Service layer for business logic
+- Validation layer for input validation
+
+### Testing
 ```bash
 # Test health endpoint
 curl http://localhost:3000/health
 
-# Test authentication
-curl -X POST http://localhost:3000/baseApi/auth/users/register \
+# Test with authentication
+curl -X POST http://localhost:3000/api/v1/auth/users/register \
   -H "Content-Type: application/json" \
-  -d '{"userId":"test123","fullName":"Test User"}'
-```
-
-### Load Testing
-```bash
-# Install artillery for load testing
-npm install -g artillery
-
-# Run load test
-artillery quick --count 100 --num 10 http://localhost:3000/health
+  -d '{"userId":"test123","fullName":"Test User","email":"test@example.com"}'
 ```
 
 ## 📊 Performance
 
 ### Optimization Features
-- **Pagination**: Efficient data loading
-- **Caching**: Firebase Firestore caching
-- **Compression**: Response compression
-- **Connection Pooling**: Database connection optimization
+- **Pagination**: Efficient data loading with `helpers/pagination.js`
+- **Database Indexing**: Optimized queries
+- **Connection Pooling**: Reusable database connections
+- **Response Compression**: Reduced payload sizes
 
 ### Monitoring
 - **Request Logging**: Morgan HTTP logger
-- **Error Tracking**: Comprehensive error handling
-- **Performance Metrics**: Response time monitoring
+- **Error Tracking**: Centralized error handling
+- **Health Checks**: `/health` endpoint for monitoring
 
 ## 🤝 Contributing
 
@@ -342,15 +493,25 @@ We welcome contributions! Please follow these steps:
 
 1. **Fork the repository**
 2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit your changes**: `git commit -m 'Add amazing feature'`
+3. **Commit your changes**: `git commit -m 'feat: add amazing feature'`
 4. **Push to the branch**: `git push origin feature/amazing-feature`
 5. **Open a Pull Request**
 
 ### Development Guidelines
-- Follow ESLint configuration
-- Write comprehensive tests
+- Follow the Node.js Standardization Guide
+- Use conventional commits (feat:, fix:, chore:, docs:)
+- Write comprehensive tests (when test suite is added)
 - Update documentation
-- Follow conventional commits
+- Keep controllers thin - move logic to services
+- Add validation schemas for new endpoints
+
+### Code Review Checklist
+- [ ] Tests added/updated
+- [ ] Environment variables documented
+- [ ] No console.logs left behind
+- [ ] Error paths handled
+- [ ] Security implications considered
+- [ ] Documentation updated
 
 ## 📝 License
 
@@ -359,20 +520,32 @@ This project is licensed under the **ISC License** - see the [LICENSE](LICENSE) 
 ## 📞 Support
 
 For support and questions:
-- **Email**: support@bakedbliss.com
 - **Issues**: [GitHub Issues](https://github.com/Code-Crafterspk/BakedBliss-backend/issues)
-- **Documentation**: [API Docs](https://docs.bakedbliss.com)
+- **Email**: support@bakedbliss.com
+- **Documentation**: 
+  - [Quick Reference](QUICK_REFERENCE.md)
+  - [Standardization Guide](docs/nodejs-standardization.md)
+  - [API Endpoints](ENDPOINTS.md)
 
 ## 🙏 Acknowledgments
 
-- **Firebase Team** for the excellent cloud platform
+- **Sequelize Team** for the excellent ORM
 - **Express.js Community** for the robust framework
 - **Node.js Community** for the amazing runtime
+- **MySQL Team** for the reliable database
 - **All Contributors** who helped build this project
+
+## 📖 Additional Documentation
+
+- [Quick Reference Guide](QUICK_REFERENCE.md) - Common commands and examples
+- [Standardization Migration](STANDARDIZATION_MIGRATION.md) - Migration details
+- [Cleanup Summary](CLEANUP_SUMMARY.md) - Recent cleanup changes
+- [Node.js Standards](docs/nodejs-standardization.md) - Coding standards
 
 ---
 
 <div align="center">
   <p>Made with ❤️ by the BakedBliss Team</p>
   <p>🍰 Delivering happiness, one order at a time 🍰</p>
+  <p><strong>Version 2.0</strong> - Rebuilt with modern standards</p>
 </div>
