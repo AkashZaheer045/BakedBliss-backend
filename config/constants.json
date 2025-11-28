@@ -1,0 +1,33 @@
+{
+    "keys_length": {
+        "otp": 6,
+        "access_token": 40,
+        "password_token": 32,
+        "index_separator": "__",
+        "reset_password_token": 20
+    },
+    "roles": {
+        "eb-super-admin": 1,
+        "org-super-admin": 2,
+        "org-admin": 3,
+        "org-user": 4,
+        "tenant": 5
+    },
+    "privileges": {
+        "read": 1,
+        "write": 2,
+        "read-write": 3,
+        "destroy": 4
+    },
+    "butler_user_service_id": 7,
+    "web_app": {
+        "base_url": {
+            "localhost": "http://localhost:3050",
+            "staging": "staging",
+            "demo": "demo url"
+        },
+        "password_reset_path": "setPassword/"
+    },
+    "char_set": "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "data_set": "bhjglyoqck829uf513z4i06xvtmrew7pnasd"
+}

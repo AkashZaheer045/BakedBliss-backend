@@ -1,26 +1,237 @@
 {
-  "development": {
-    "username": "akash",
-    "password": "akash123",
-    "database": "baked_bliss_dev",
+  "localhost": {
+    "name": "baked_bliss_dev",
+    "user": "akash",
+    "pass": "akash123",
     "host": "127.0.0.1",
     "port": 3306,
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "showErrors": true,
+    "charset": "utf8mb4",
+    "logging": false,
+    "pool": {
+      "min": 0,
+      "max": 10,
+      "idle": 30000,
+      "evict": 2000,
+      "acquire": 60000,
+      "handleDisconnects": true
+    },
+    "dialectOptions": {
+      "charset": "utf8mb4"
+    },
+    "omitNull": true,
+    "benchmark": true,
+    "define": {
+      "paranoid": true,
+      "timestamp": true,
+      "subQuery": false,
+      "underscored": false,
+      "duplicating": false,
+      "underscoredAll": true,
+      "createdAt": "created_at",
+      "updatedAt": "updated_at",
+      "deletedAt": "deleted_at",
+      "defaultScope": {
+        "omitNull": true,
+        "benchmark": true,
+        "paranoid": false,
+        "subQuery": false,
+        "duplicating": false,
+        "where": {
+          "deleted_at": null
+        },
+        "attributes": {
+          "exclude": [
+            "deleted_at"
+          ]
+        }
+      }
+    }
+  },
+  "develop": {
+    "name": "",
+    "user": "admin",
+    "pass": "c5mD4tab4s3pA55",
+    "host": "csm-database.c5mgyjjxd3vh.us-east-1.rds.amazonaws.com",
+    "port": 3306,
+    "dialect": "mysql",
+    "showErrors": true,
+    "charset": "utf8mb4",
+    "logging": false,
+    "pool": {
+      "min": 0,
+      "max": 10,
+      "idle": 30000,
+      "evict": 2000,
+      "acquire": 60000,
+      "handleDisconnects": true
+    },
+    "dialectOptions": {
+      "charset": "utf8mb4"
+    },
+    "omitNull": true,
+    "benchmark": true,
+    "define": {
+      "paranoid": true,
+      "timestamp": true,
+      "subQuery": false,
+      "underscored": false,
+      "duplicating": false,
+      "underscoredAll": true,
+      "createdAt": "created_at",
+      "updatedAt": "updated_at",
+      "deletedAt": "deleted_at",
+      "defaultScope": {
+        "omitNull": true,
+        "benchmark": true,
+        "paranoid": false,
+        "subQuery": false,
+        "duplicating": false,
+        "where": {
+          "deleted_at": null
+        },
+        "attributes": {
+          "exclude": [
+            "deleted_at"
+          ]
+        }
+      }
+    }
   },
   "staging": {
-    "username": "akash",
-    "password": "akash123",
-    "database": "baked_bliss_staging",
-    "host": "127.0.0.1",
+    "name": "sample",
+    "user": "admin",
+    "pass": "admin",
+    "host": "yourhost",
     "port": 3306,
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "showErrors": true,
+    "charset": "utf8mb4",
+    "logging": false,
+    "pool": {
+      "min": 0,
+      "max": 10,
+      "idle": 30000,
+      "evict": 2000,
+      "acquire": 60000,
+      "handleDisconnects": true
+    },
+    "dialectOptions": {
+      "charset": "utf8mb4"
+    },
+    "omitNull": true,
+    "benchmark": true,
+    "define": {
+      "paranoid": true,
+      "timestamp": true,
+      "subQuery": false,
+      "underscored": true,
+      "duplicating": false,
+      "underscoredAll": true,
+      "createdAt": "created_at",
+      "updatedAt": "updated_at",
+      "deletedAt": "deleted_at",
+      "defaultScope": {
+        "omitNull": true,
+        "benchmark": true,
+        "paranoid": false,
+        "subQuery": false,
+        "duplicating": false,
+        "where": {
+          "deleted_at": null
+        },
+        "attributes": {
+          "exclude": [
+            "deleted_at"
+          ]
+        }
+      }
+    }
   },
-  "production": {
-    "username": "akash",
-    "password": "akash123",
-    "database": "baked_bliss_prod",
-    "host": "127.0.0.1",
+  "demo": {
+    "name": "sample",
+    "user": "admin",
+    "pass": "admin",
+    "host": "yourhost",
     "port": 3306,
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "showErrors": true,
+    "charset": "utf8mb4",
+    "logging": false,
+    "pool": {
+      "min": 0,
+      "max": 10,
+      "idle": 30000,
+      "evict": 2000,
+      "acquire": 60000,
+      "handleDisconnects": true
+    },
+    "dialectOptions": {
+      "charset": "utf8mb4"
+    },
+    "omitNull": true,
+    "benchmark": true,
+    "define": {
+      "paranoid": true,
+      "timestamp": true,
+      "subQuery": false,
+      "underscored": true,
+      "duplicating": false,
+      "underscoredAll": true,
+      "createdAt": "created_at",
+      "updatedAt": "updated_at",
+      "deletedAt": "deleted_at",
+      "defaultScope": {
+        "omitNull": true,
+        "benchmark": true,
+        "paranoid": false,
+        "subQuery": false,
+        "duplicating": false,
+        "where": {
+          "deleted_at": null
+        },
+        "attributes": {
+          "exclude": [
+            "deleted_at"
+          ]
+        }
+      }
+    }
+  },
+  "keys_length": {
+    "otp": 6,
+    "access_token": 40,
+    "refresh_token": 32,
+    "index_separator": "__",
+    "reset_password_token": 20
+  },
+  "roles": {
+    "eb-super-admin": 1,
+    "org-super-admin": 2,
+    "org-admin": 3,
+    "org-user": 4,
+    "tenant": 5
+  },
+  "privileges": {
+    "read": 1,
+    "write": 2,
+    "read-write": 3,
+    "destroy": 4
+  },
+  "web_app": {
+    "base_url": {
+      "localhost": "http://localhost:3000",
+      "staging": "staging",
+      "demo": "demo"
+    },
+    "password_reset_path": "setPassword/"
+  },
+  "char_set": "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  "data_set": "bhjglyoqck829uf513z4i06xvtmrew7pnasd",
+  "stripeKeys": {
+    "apiKey": "",
+    "secretKey": "",
+    "webhookHash": ""
   }
 }

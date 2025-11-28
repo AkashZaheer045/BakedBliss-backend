@@ -1,52 +1,12 @@
 {
-    "ValidationError": {
-        "code": "VALIDATION_ERROR",
-        "statusCode": 422,
-        "message": "Validation failed"
+    "en": {
+        "email_isUnique": "Email is already taken",
+        "phone_isUnique": "Phone number is already taken",
+        "dob_not_future": "Date of birth cannot be in the future"
     },
-    "AuthenticationError": {
-        "code": "AUTHENTICATION_ERROR",
-        "statusCode": 401,
-        "message": "Authentication failed"
-    },
-    "AuthorizationError": {
-        "code": "AUTHORIZATION_ERROR",
-        "statusCode": 403,
-        "message": "Insufficient permissions"
-    },
-    "NotFoundError": {
-        "code": "NOT_FOUND",
-        "statusCode": 404,
-        "message": "Resource not found"
-    },
-    "DuplicateError": {
-        "code": "DUPLICATE_ERROR",
-        "statusCode": 409,
-        "message": "Resource already exists"
-    },
-    "DatabaseError": {
-        "code": "DATABASE_ERROR",
-        "statusCode": 500,
-        "message": "Database operation failed"
-    },
-    "ExternalServiceError": {
-        "code": "EXTERNAL_SERVICE_ERROR",
-        "statusCode": 502,
-        "message": "External service unavailable"
-    },
-    "InvalidTokenError": {
-        "code": "INVALID_TOKEN",
-        "statusCode": 401,
-        "message": "Invalid or expired token"
-    },
-    "FileUploadError": {
-        "code": "FILE_UPLOAD_ERROR",
-        "statusCode": 400,
-        "message": "File upload failed"
-    },
-    "RateLimitError": {
-        "code": "RATE_LIMIT_ERROR",
-        "statusCode": 429,
-        "message": "Too many requests"
+    "ar": {
+        "email_isUnique": "البريد الإلكتروني مستخدم بالفعل",
+        "phone_isUnique": "رقم الهاتف مستخدم بالفعل",
+        "dob_not_future": "تاريخ الميلاد لا يمكن أن يكون في المستقبل"
     }
 }

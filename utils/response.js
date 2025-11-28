@@ -1,134 +1,61 @@
-/**
- * Standardized response helpers
- * Ensures consistent API response shape: { success, data, errors, meta }
- */
+// const server_config = require("./../config/server");
+var config = require('../config/config.json')
 
-/**
- * Send success response
- * @param {Object} res - Express response object
- * @param {*} data - Response data
- * @param {Object} meta - Optional metadata (pagination, etc.)
- * @param {number} statusCode - HTTP status code (default: 200)
- */
-const sendSuccess = (res, data = null, meta = {}, statusCode = 200) => {
-    return res.status(statusCode).json({
-        success: true,
-        data,
-        meta,
-    });
-};
-
-/**
- * Send error response
- * @param {Object} res - Express response object
- * @param {string|Array} errors - Error message(s)
- * @param {number} statusCode - HTTP status code (default: 400)
- * @param {Object} meta - Optional metadata
- */
-const sendError = (res, errors, statusCode = 400, meta = {}) => {
-    const errorArray = Array.isArray(errors) ? errors : [errors];
-
-    return res.status(statusCode).json({
-        success: false,
-        errors: errorArray,
-        meta,
-    });
-};
-
-/**
- * Send paginated success response
- * @param {Object} res - Express response object
- * @param {Array} data - Response data array
- * @param {Object} pagination - Pagination info { page, limit, total, totalPages }
- * @param {number} statusCode - HTTP status code (default: 200)
- */
-const sendPaginatedSuccess = (res, data, pagination, statusCode = 200) => {
-    return res.status(statusCode).json({
-        success: true,
-        data,
-        meta: {
-            pagination: {
-                page: pagination.page,
-                limit: pagination.limit,
-                total: pagination.total,
-                totalPages: pagination.totalPages,
-            },
-        },
-    });
-};
-
-/**
- * Send created response (201)
- * @param {Object} res - Express response object
- * @param {*} data - Created resource data
- * @param {Object} meta - Optional metadata
- */
-const sendCreated = (res, data, meta = {}) => {
-    return sendSuccess(res, data, meta, 201);
-};
-
-/**
- * Send no content response (204)
- * @param {Object} res - Express response object
- */
-const sendNoContent = (res) => {
-    return res.status(204).send();
-};
-
-/**
- * Send unauthorized error (401)
- * @param {Object} res - Express response object
- * @param {string} message - Error message
- */
-const sendUnauthorized = (res, message = 'Unauthorized') => {
-    return sendError(res, message, 401);
-};
-
-/**
- * Send forbidden error (403)
- * @param {Object} res - Express response object
- * @param {string} message - Error message
- */
-const sendForbidden = (res, message = 'Forbidden') => {
-    return sendError(res, message, 403);
-};
-
-/**
- * Send not found error (404)
- * @param {Object} res - Express response object
- * @param {string} message - Error message
- */
-const sendNotFound = (res, message = 'Resource not found') => {
-    return sendError(res, message, 404);
-};
-
-/**
- * Send validation error (422)
- * @param {Object} res - Express response object
- * @param {Array} errors - Validation errors
- */
-const sendValidationError = (res, errors) => {
-    return sendError(res, errors, 422);
-};
-
-/**
- * Send internal server error (500)
- * @param {Object} res - Express response object
- * @param {string} message - Error message
- */
-const sendInternalError = (res, message = 'Internal server error') => {
-    return sendError(res, message, 500);
-};
-
-module.exports = {
-    sendSuccess,
-    sendError,
-    sendPaginatedSuccess,
-    sendCreated,
-    sendNoContent,
-    sendUnauthorized,
-    sendForbidden,
-    sendNotFound,
-    sendValidationError,
-    sendInternalError,
+//--//
+module.exports = class {
+    constructor() {
+        this.status = null;
+        this.statusCode = null;
+        this.message = null;
+        this.data = null;
+        this.error = null;
+        this.errorStack = null;
+    };
+    setSuccess(data, message, statusCode) {
+        this.status = "success";
+        this.statusCode = statusCode || 200;
+        this.message = message || "OK";
+        this.data = data;
+        this.error = null;
+        return this;
+    };
+    setError(error, message, statusCode) {
+        this.status = "error";
+        this.statusCode = statusCode || 500;
+        this.message = message || "Error";
+        this.data = {};
+        this.error = error;
+        this.errorStack = null;
+        return this;
+    };
+    setErrorStack(stack) {
+        this.errorStack = stack || null;
+        return this;
+    };
+    sendRes(req, res) {
+        let result = {
+            status: this.status,
+            statusCode: this.statusCode,
+            message: this.message,
+            data: this.data,
+            error: this.error,
+            errorStack: this.errorStack
+            // UID: req.UID
+        };
+        // console.log(result);
+        if (req.statusMessage && req.statusMessage !== "") { result.message = req.statusMessage; }
+        // if(!server_config.enc_enabled){req.enc_password = "";}
+        // if(req.enc_password && req.enc_password !== ""){
+        //     let password = req.enc_password;
+        //     if(result.data){
+        //         result.data = JSON.stringify(result.data);
+        //         result.data = crypto.encrypt(result.data, password);
+        //     }
+        //     else if(result.error){
+        //         result.error = JSON.stringify(result.error);
+        //         result.error = crypto.encrypt(result.error, password);
+        //     }
+        // }
+        return res.status(this.statusCode).json(result);
+    }
 };

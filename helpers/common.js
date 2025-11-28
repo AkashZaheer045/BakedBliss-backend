@@ -33,7 +33,7 @@ const parseSequelizeValidationError = (error, messages) => {
     return messages[key] || msgMap[key] || error?.message;
 };
 
-const errorHandler = async function (data, req, res, next) {
+module.exports = async function (data, req, res, next) {
     const response = new responseH();
     const lang = req.lang || 'en';
     const messages = custom_exceptions[lang] || custom_exceptions.en;
@@ -147,8 +147,4 @@ const errorHandler = async function (data, req, res, next) {
             error: err.message
         });
     }
-};
-
-module.exports = {
-    errorHandler
 };
