@@ -1,12 +1,9 @@
 let connection = null;
 let sequelize = require("sequelize");
-let config = require("./../config/db");
-//--//
-sequelize.DataTypes.DATE.prototype._stringify = function _stringify(date, options){
-    date = this._applyTimezone(date, options);
-    return date.format("YYYY-MM-DD HH:mm:ss");
-};
-//--//
+let configFull = require("./../../config/database");
+let env = process.env.NODE_ENV || 'development';
+let config = configFull[env];
+
 let dbConfig = {
     host: config.host,
     port: config.port,
@@ -32,15 +29,20 @@ let dbConfig = {
             paranoid: false,
             subQuery: false,
             duplicating: false,
-            where: {deleted_at: null},
-            attributes: {exclude: ["deleted_at"]}
+            where: { deleted_at: null },
+            attributes: { exclude: ["deleted_at"] }
         }
     }
 };
-///*if(config.dialect === "mssql"){dbConfig.define.schema = config.schema;}*/
-//--//
-if(!connection){connection = new sequelize(config.name, config.user, config.pass, dbConfig);}
-//--//
+
+if (!connection) {
+    connection = new sequelize(
+        config.database,
+        config.username,
+        config.password,
+        dbConfig
+    );
+}
 module.exports = {
     config,
     sequelize,

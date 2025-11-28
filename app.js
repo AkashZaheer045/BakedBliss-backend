@@ -7,13 +7,6 @@ const cors = require('cors');  // For enabling CORS
 const helmet = require('helmet');  // For securing HTTP headers
 const morgan = require('morgan');  // For logging requests
 const { initializeDatabase } = require('./config/sequelizeConfig');  // Initialize database
-const authRoutes = require('./src/modules/auth/routes/authRoutes');
-const contactRoutes = require('./src/modules/contact/routes/contactRoutes');
-const productRoutes = require('./src/modules/products/routes/productRoutes');
-const cartRoutes = require('./src/modules/cart/routes/cartRoutes');
-const orderRoutes = require('./src/modules/orders/routes/orderRoutes');
-const addressRoutes = require('./src/modules/address/routes/addressRoutes');
-const userRoutes = require('./src/modules/user/routes/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,13 +25,15 @@ app.get('/health', (req, res) => {
 
 
 // All routes of the application main functionality
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/products', productRoutes);
-app.use('/api/v1/contact', contactRoutes);
-app.use('/api/v1/cart', cartRoutes);
-app.use('/api/v1/order', orderRoutes);
-app.use('/api/v1/address', addressRoutes);
-app.use('/api/v1/users', userRoutes);
+// Each module's `app.js` exports an object { routes } where `routes` is an Express Router.
+// Mount the router itself (module.exports.routes) so Express receives a Router instance.
+app.use('/api/v1/auth', require('./src/modules/auth/app').routes);
+app.use('/api/v1/products', require('./src/modules/products/app').routes);
+app.use('/api/v1/contact', require('./src/modules/contact/app').routes);
+app.use('/api/v1/cart', require('./src/modules/cart/app').routes);
+app.use('/api/v1/order', require('./src/modules/orders/app').routes);
+app.use('/api/v1/address', require('./src/modules/address/app').routes);
+app.use('/api/v1/users', require('./src/modules/user/app').routes);
 
 
 // Import error handlers

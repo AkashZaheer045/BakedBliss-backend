@@ -4,8 +4,8 @@
   "description": "A Baked bliss application",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js",
+    "dev": "node app.js",
+    "start": "nodemon app.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
     "db:seed": "npx sequelize-cli db:seed:all"

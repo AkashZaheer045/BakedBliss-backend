@@ -1,9 +1,5 @@
-/**
- * orders Module
- */
-
-const routes = require('./routes/ordersRoutes');
+const routes = require('./routes/orderRoutes');
 
 module.exports = {
-  routes,
+  routes
 };
