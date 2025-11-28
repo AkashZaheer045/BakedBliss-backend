@@ -13,7 +13,7 @@ const { request_getters, request_parser, not_found, allowed_methods } = require(
 //------------------------------------//
 const app = express();
 app.use(cors({ optionsSuccessStatus: 200 }));
-app.options("*", cors({ optionsSuccessStatus: 200 }));
+// app.options("(.*)", cors({ optionsSuccessStatus: 200 }));
 //------------------------------------//
 app.use(express.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));

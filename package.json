@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "A Baked bliss application",
   "main": "app.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
-    "dev": "node app.js",
-    "start": "nodemon app.js",
+    "start": "node app.js",
+    "dev": "node --watch app.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
     "db:seed": "npx sequelize-cli db:seed:all"
@@ -17,16 +20,15 @@
     "console-stamp": "^3.1.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "dotenv": "^16.4.5",
+    "dotenv": "^17.2.3",
     "eb-butler-utils": "^1.0.11",
-    "express": "^4.21.0",
-    "helmet": "^8.0.0",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
+    "morgan": "^1.10.1",
     "multer": "^2.0.2",
-    "mysql2": "^3.3.0",
-    "nodemon": "^3.1.7",
-    "sequelize": "^6.33.0"
+    "mysql2": "^3.15.3",
+    "sequelize": "^6.37.7"
   }
 }
