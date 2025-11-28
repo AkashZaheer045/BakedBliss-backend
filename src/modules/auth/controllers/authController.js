@@ -9,24 +9,49 @@ const createUser = async (userData) => {
   return await User.create(userData);
 };
 
+const hashPassword = (password) => {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return { salt, hash };
+};
+
+const verifyPassword = (password, hash, salt) => {
+  const verifyHash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return hash === verifyHash;
+};
+
 // Sign-up function
 const signUpUser = async (req, res) => {
   try {
-    const { fullName, email, profilePicture, addresses, selectedAddressId, phoneNumber, role } = req.body;
+    const { fullName, email, password, profilePicture, addresses, selectedAddressId, phoneNumber, role } = req.body;
 
     if (!fullName) {
       return res.status(400).json({ message: "Invalid input: fullName is required." });
+    }
+
+    if (!password) {
+      return res.status(400).json({ message: "Invalid input: password is required." });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists." });
     }
 
     const timestamp = Date.now().toString();
     const randomPart = Math.random().toString(36).substring(2, 8);
     const userId = `user_${timestamp}_${randomPart}`;
 
+    const { salt, hash } = hashPassword(password);
+
     const newUserData = {
       user_id: userId,
       full_name: fullName,
       role: role || 'user',
       email: email || null,
+      password: hash,
+      salt: salt,
       profile_picture: profilePicture || null,
       addresses: addresses || [],
       phone_number: phoneNumber || null,
@@ -67,12 +92,12 @@ const signUpUser = async (req, res) => {
 // Sign-in function
 const signInUser = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, password } = req.body;
 
-    if (!email) {
+    if (!email || !password) {
       return res.status(400).json({
         message: 'failed',
-        error: "Email is required."
+        error: "Email and password are required."
       });
     }
 
@@ -85,6 +110,24 @@ const signInUser = async (req, res) => {
       return res.status(400).json({
         message: 'failed',
         error: "User does not exist."
+      });
+    }
+
+    // Verify password
+    if (!user.password || !user.salt) {
+      // Handle legacy users or social login users who might not have a password
+      return res.status(400).json({
+        message: 'failed',
+        error: "Invalid credentials or social login account."
+      });
+    }
+
+    const isValid = verifyPassword(password, user.password, user.salt);
+
+    if (!isValid) {
+      return res.status(401).json({
+        message: 'failed',
+        error: "Invalid password."
       });
     }
 

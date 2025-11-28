@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     selected_address_id: { type: DataTypes.STRING(128), allowNull: true },
     role: { type: DataTypes.STRING(64), allowNull: false, defaultValue: 'user' },
     push_token: { type: DataTypes.STRING(512), allowNull: true },
+    password: { type: DataTypes.STRING(1024), allowNull: true }, // Hashed password
+    salt: { type: DataTypes.STRING(512), allowNull: true }, // Salt for hashing
     date_joined: { type: DataTypes.DATE, allowNull: true },
     created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
     updated_at: { type: DataTypes.DATE, allowNull: true },

@@ -12,20 +12,20 @@ router.get('/search', searchProducts); // Keep the existing search route
 // List products (paginated / filtered)
 router.get('/', listProducts);
 
-// Categories metadata
-router.get('/categories', getCategories);
-
 router.post('/upload', createProduct);
-
-// Router to get product by ID
-router.get('/:product_id', getProductById);
-router.get('/category/:category_name', getProductsByCategory);
-
 
 // Router for trending products
 router.get('/trending', getTrendingProducts);
+
 // Recommendations (user-specific)
 router.get('/recommendations/:userId', authenticateToken, getRecommendations);
 
+// Categories metadata
+router.get('/categories', getCategories);
+
+router.get('/category/:category_name', getProductsByCategory);
+
+// Router to get product by ID (Must be last)
+router.get('/:product_id', getProductById);
 
 module.exports = router;
