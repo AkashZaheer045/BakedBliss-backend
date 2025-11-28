@@ -1,14 +1,17 @@
 const express = require('express');
-const { addItemToCart, viewCart, updateCartItem, removeItemFromCart } = require('../controllers/cartController'); // Make sure this path is correct
+const { addItemToCart, viewCart, updateCartItem, removeItemFromCart } = require('../controllers/cartController');
+const authenticateToken = require('../../../../middleware/authMiddleware');
 
-const authenticateToken = require('../../../../middleware/authMiddleware'); // Make sure middleware is properly imported
+let routes = function () {
+    const router = express.Router({ mergeParams: true });
 
-const router = express.Router();
+    // Ensure all routes are defined properly
+    router.post('/add', authenticateToken, addItemToCart);
+    router.get('/view', authenticateToken, viewCart);
+    router.put('/update', authenticateToken, updateCartItem);
+    router.delete('/remove', authenticateToken, removeItemFromCart);
 
-// Ensure all routes are defined properly
-router.post('/add', authenticateToken, addItemToCart);
-router.get('/view', authenticateToken, viewCart);
-router.put('/update', authenticateToken, updateCartItem);
-router.delete('/remove', authenticateToken, removeItemFromCart);
+    return router;
+};
 
-module.exports = router;
+module.exports = routes;

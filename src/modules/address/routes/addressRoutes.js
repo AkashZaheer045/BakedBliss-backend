@@ -1,8 +1,5 @@
-// addressRoutes.js
 const express = require('express');
-const router = express.Router();
-const authenticateToken= require('../../../../middleware/authMiddleware'); // Assuming the middleware is already implemented
-
+const authenticateToken = require('../../../../middleware/authMiddleware');
 const {
   addAddress,
   updateAddress,
@@ -10,16 +7,22 @@ const {
   viewAddresses
 } = require('../controllers/addressController');
 
-// Add a new address
-router.post('/add', authenticateToken, addAddress);
+let routes = function () {
+  const router = express.Router({ mergeParams: true });
 
-// Update an existing address
-router.put('/update', authenticateToken, updateAddress);
+  // Add a new address
+  router.post('/add', authenticateToken, addAddress);
 
-// Delete an address
-router.delete('/delete', authenticateToken, deleteAddress);
+  // Update an existing address
+  router.put('/update', authenticateToken, updateAddress);
 
-// View all addresses
-router.get('/view', authenticateToken, viewAddresses);
+  // Delete an address
+  router.delete('/delete', authenticateToken, deleteAddress);
 
-module.exports = router;
+  // View all addresses
+  router.get('/view', authenticateToken, viewAddresses);
+
+  return router;
+};
+
+module.exports = routes;

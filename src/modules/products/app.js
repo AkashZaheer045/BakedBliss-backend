@@ -1,5 +1,9 @@
-const routes = require('./routes/productRoutes');
+const express = require("express");
 
-module.exports = {
-  routes
+let routes = function () {
+  const router = express.Router();
+  router.use("/", require("./routes/productRoutes")());
+  return router;
 };
+
+module.exports = routes;

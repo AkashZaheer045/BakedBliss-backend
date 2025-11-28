@@ -1,9 +1,13 @@
 const express = require('express');
 const { submitContactForm } = require('../controllers/contactController');
 
-const router = express.Router();
+let routes = function () {
+    const router = express.Router({ mergeParams: true });
 
-// Define the route for Contact Us form submission
-router.post('/contact-us', submitContactForm);
+    // Define the route for Contact Us form submission
+    router.post('/contact-us', submitContactForm);
 
-module.exports = router;
+    return router;
+};
+
+module.exports = routes;

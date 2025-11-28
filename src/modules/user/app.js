@@ -1,5 +1,9 @@
-const routes = require('./routes/userRoutes');
+const express = require("express");
 
-module.exports = {
-  routes
+let routes = function () {
+  const router = express.Router();
+  router.use("/", require("./routes/userRoutes")());
+  return router;
 };
+
+module.exports = routes;

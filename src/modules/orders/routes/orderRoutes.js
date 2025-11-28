@@ -2,10 +2,14 @@ const express = require('express');
 const { confirmOrder, viewOrderHistory, getOrderStatus } = require('../controllers/orderController');
 const authenticateToken = require('../../../../middleware/authMiddleware');
 
-const router = express.Router();
+let routes = function () {
+    const router = express.Router({ mergeParams: true });
 
-router.post('/confirm', authenticateToken, confirmOrder);
-router.get('/history', authenticateToken, viewOrderHistory);
-router.get('/status/:orderId', authenticateToken, getOrderStatus);
+    router.post('/confirm', authenticateToken, confirmOrder);
+    router.get('/history', authenticateToken, viewOrderHistory);
+    router.get('/status/:orderId', authenticateToken, getOrderStatus);
 
-module.exports = router;
+    return router;
+};
+
+module.exports = routes;

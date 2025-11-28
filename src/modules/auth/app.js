@@ -1,5 +1,9 @@
-const routes = require('./routes/authRoutes');
+const express = require("express");
 
-module.exports = {
-    routes
+let routes = function () {
+    const router = express.Router();
+    router.use("/", require("./routes/authRoutes")());
+    return router;
 };
+
+module.exports = routes;
