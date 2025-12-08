@@ -26,6 +26,27 @@ let routes = function () {
 
     router.get('/category/:category_name', getProductsByCategory);
 
+    // Admin routes - Update and Delete products
+    router.put('/:product_id', authenticateToken, createProduct); // Reusing createProduct for update
+    router.delete('/:product_id', authenticateToken, async (req, res) => {
+        try {
+            const { product_id } = req.params;
+            const product = await require('../../../../db/sequelize/sequelize').models.products.findOne({
+                where: { id: product_id }
+            });
+
+            if (!product) {
+                return res.status(404).json({ success: false, message: 'Product not found' });
+            }
+
+            await product.destroy();
+            return res.json({ success: true, message: 'Product deleted successfully' });
+        } catch (error) {
+            console.error('Delete product error:', error);
+            return res.status(500).json({ success: false, message: 'Failed to delete product' });
+        }
+    });
+
     // Router to get product by ID (Must be last)
     router.get('/:product_id', getProductById);
 

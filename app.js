@@ -65,6 +65,7 @@ app.use("/api/v1/cart", require("./src/modules/cart/app.js")());
 app.use("/api/v1/order", require("./src/modules/orders/app.js")());
 app.use("/api/v1/address", require("./src/modules/address/app.js")());
 app.use("/api/v1/users", require("./src/modules/user/app.js")());
+app.use("/api/v1/admin", require("./src/modules/admin/app.js")());
 
 //------Checking for the error comeback to main file before going to middleware---------//
 app.use((err, req, res, next) => {
