@@ -1,0 +1,12 @@
+{
+    "en": {
+        "email_isUnique": "Email is already taken",
+        "phone_isUnique": "Phone number is already taken",
+        "dob_not_future": "Date of birth cannot be in the future"
+    },
+    "ar": {
+        "email_isUnique": "البريد الإلكتروني مستخدم بالفعل",
+        "phone_isUnique": "رقم الهاتف مستخدم بالفعل",
+        "dob_not_future": "تاريخ الميلاد لا يمكن أن يكون في المستقبل"
+    }
+}

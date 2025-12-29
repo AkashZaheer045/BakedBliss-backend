@@ -1,27 +1,25 @@
-const admin = require('firebase-admin');
+const jwt = require('jsonwebtoken');
 
+// JWT-based authentication middleware
+// Expects header: Authorization: Bearer <JWT>
 const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-
-    // Check if the authorization header exists and starts with 'Bearer'
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ message: 'Unauthorized: No token provided' });
     }
 
-    // Extract the Firebase ID token from the header
-    const idToken = authHeader.split('Bearer ')[1];
+    const token = authHeader.split('Bearer ')[1];
+    const secret = process.env.JWT_SECRET ;
 
-    // Verify the ID token with Firebase Admin SDK
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    // Verify JWT
+    const decoded = jwt.verify(token, secret);
 
-    // Attach the decoded token's user information to the request object
-    req.user = decodedToken;
-
-    // Proceed to the next middleware or the API route
+    // Normalise to match previous shape used in controllers (req.user.uid)
+    req.user = { uid: decoded.uid || decoded.userId || decoded.sub, ...decoded };
     next();
   } catch (error) {
-    console.error("Error verifying Firebase ID token:", error);
+    console.error('Error verifying JWT:', error.message || error);
     return res.status(401).json({ message: 'Unauthorized: Invalid or expired token' });
   }
 };
