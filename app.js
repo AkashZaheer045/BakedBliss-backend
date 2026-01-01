@@ -15,7 +15,7 @@ const app = express();
 app.use(cors({ optionsSuccessStatus: 200 }));
 // app.options("(.*)", cors({ optionsSuccessStatus: 200 }));
 //------------------------------------//
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "30mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 //------------------------------------//
 app.use("/uploads", express.static(__dirname + "/uploads"));
@@ -30,16 +30,9 @@ console_stamp(console, {
 });
 //allow all standard HTTP methods (custom replacement for eb-butler-utils allowed_methods which only allows POST)
 const customAllowedMethods = (req, res, next) => {
-  req.statusMessage = null;
   req.req_start_time = new Date().toISOString();
-  const method = String(req.method).trim().toUpperCase();
-  const allowedMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
-  if (method === "OPTIONS") {
-    return next(200);
-  } else if (!allowedMethods.includes(method)) {
-    return next(405);
-  }
-  return next();
+  const allowed = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+  return allowed.includes(req.method) ? next() : next(405);
 };
 app.use(customAllowedMethods);
 //------------------------------------//
@@ -85,7 +78,6 @@ app.use((err, req, res, next) => {
   console.log("Error type:", err.constructor.name);
   console.log("Error message:", err.message);
   console.log("Error stack :", err.stack);
-
   console.log("Original URL:", req.originalUrl);
   next(err); // pass it to the actual error-handling middleware
 });
@@ -96,7 +88,6 @@ app.use(require("./middleware/response_handler").errorHandler); // Using existin
 const os = require("os");
 //------------------------------------//
 const sequelize = require('./db/sequelize/sequelize');
-// const consumers = require("./helpers/topics_consumer");
 console.log("Server host", os.hostname());
 // console.log("database host", sequelize.connection.config.host);
 //Here We are building the sequelize Db connection
