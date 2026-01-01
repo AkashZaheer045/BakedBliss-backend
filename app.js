@@ -4,7 +4,7 @@ const moment = require("moment");
 const express = require("express");
 const bodyParser = require("body-parser");
 require('dotenv').config()
-const { request_getters, request_parser, not_found, allowed_methods } = require('eb-butler-utils')
+const { request_getters, request_parser, not_found } = require('eb-butler-utils')
 // const common = require('./helpers/common') // Assuming this helper exists or will be created
 // const constants = require('./config/constants.json') // Assuming this config exists
 //--//
@@ -15,7 +15,7 @@ const app = express();
 app.use(cors({ optionsSuccessStatus: 200 }));
 // app.options("(.*)", cors({ optionsSuccessStatus: 200 }));
 //------------------------------------//
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "30mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 //------------------------------------//
 app.use("/uploads", express.static(__dirname + "/uploads"));
@@ -28,8 +28,13 @@ console_stamp(console, {
   pattern: "YYYY-MM-DD HH:mm:ss",
   formatter: function () { return moment().format("YYYY-MM-DD HH:mm:ss"); }
 });
-//allow methods for postman
-app.use(allowed_methods);
+//allow all standard HTTP methods (custom replacement for eb-butler-utils allowed_methods which only allows POST)
+const customAllowedMethods = (req, res, next) => {
+  req.req_start_time = new Date().toISOString();
+  const allowed = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+  return allowed.includes(req.method) ? next() : next(405);
+};
+app.use(customAllowedMethods);
 //------------------------------------//
 morgan.token("date", function () {
   return moment().format("YYYY-MM-DD HH:mm:ss");
@@ -73,7 +78,6 @@ app.use((err, req, res, next) => {
   console.log("Error type:", err.constructor.name);
   console.log("Error message:", err.message);
   console.log("Error stack :", err.stack);
-
   console.log("Original URL:", req.originalUrl);
   next(err); // pass it to the actual error-handling middleware
 });
@@ -84,7 +88,6 @@ app.use(require("./middleware/response_handler").errorHandler); // Using existin
 const os = require("os");
 //------------------------------------//
 const sequelize = require('./db/sequelize/sequelize');
-// const consumers = require("./helpers/topics_consumer");
 console.log("Server host", os.hostname());
 // console.log("database host", sequelize.connection.config.host);
 //Here We are building the sequelize Db connection

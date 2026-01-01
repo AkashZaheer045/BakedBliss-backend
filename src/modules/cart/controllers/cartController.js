@@ -7,6 +7,8 @@ const addItemToCart = async (req, res) => {
     const userId = req.user.uid; // Get user ID from token
     const { productId, quantity } = req.body;
 
+    console.log('Adding to cart - userId:', userId, 'productId:', productId, 'quantity:', quantity);
+
     // Find existing cart for user
     let cart = await Cart.findOne({
       where: { user_id: userId }
@@ -14,7 +16,8 @@ const addItemToCart = async (req, res) => {
 
     let cartItems = [];
     if (cart) {
-      cartItems = cart.items || [];
+      // Make a copy of items to ensure change detection works
+      cartItems = JSON.parse(JSON.stringify(cart.items || []));
     }
 
     // Add or update item in the cart
@@ -25,14 +28,23 @@ const addItemToCart = async (req, res) => {
       cartItems.push({ productId, quantity });
     }
 
+    console.log('Cart items to save:', cartItems);
+
     // Update or create cart
     if (cart) {
-      await cart.update({ items: cartItems });
+      // Explicitly set items and mark as changed for Sequelize to detect JSON changes
+      cart.items = cartItems;
+      cart.changed('items', true);
+      cart.updated_at = new Date();
+      await cart.save();
+      console.log('Cart updated successfully');
     } else {
       cart = await Cart.create({
         user_id: userId,
-        items: cartItems
+        items: cartItems,
+        created_at: new Date()
       });
+      console.log('Cart created successfully');
     }
 
     res.status(200).json({ message: "Item added to cart", cart: { items: cartItems } });
@@ -76,12 +88,16 @@ const updateCartItem = async (req, res) => {
       return res.status(404).json({ message: "Cart is empty" });
     }
 
-    let cartItems = cart.items || [];
+    // Make a copy to ensure change detection
+    let cartItems = JSON.parse(JSON.stringify(cart.items || []));
     const itemIndex = cartItems.findIndex(item => item.productId === productId);
 
     if (itemIndex > -1) {
       cartItems[itemIndex].quantity = quantity;
-      await cart.update({ items: cartItems });
+      cart.items = cartItems;
+      cart.changed('items', true);
+      cart.updated_at = new Date();
+      await cart.save();
       return res.status(200).json({ message: "Cart item updated", cart: { items: cartItems } });
     } else {
       return res.status(404).json({ message: "Item not found in cart" });
@@ -106,10 +122,15 @@ const removeItemFromCart = async (req, res) => {
       return res.status(404).json({ message: "Cart is empty" });
     }
 
-    let cartItems = cart.items || [];
+    // Make a copy and filter
+    let cartItems = JSON.parse(JSON.stringify(cart.items || []));
     cartItems = cartItems.filter(item => item.productId !== productId);
 
-    await cart.update({ items: cartItems });
+    cart.items = cartItems;
+    cart.changed('items', true);
+    cart.updated_at = new Date();
+    await cart.save();
+
     res.status(200).json({ message: "Item removed from cart", cart: { items: cartItems } });
   } catch (error) {
     console.error("Error removing item from cart:", error);

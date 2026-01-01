@@ -49,85 +49,311 @@ const sampleUsers = [
 ];
 
 const sampleProducts = [
+    // ========== PASTRIES ==========
     {
-        title: 'Chocolate Chip Cookies',
-        price: 5.99,
-        sale_price: 4.99,
-        thumbnail: 'https://via.placeholder.com/300x300/8B4513/FFFFFF?text=Cookies',
+        title: 'Classic Chocolate Croissant',
+        price: 4.99,
+        sale_price: 3.99,
+        thumbnail: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400',
         rating: 4.8,
-        category: 'Cookies',
-        rating_count: 120,
-        ingredients: ['flour', 'sugar', 'chocolate chips', 'butter', 'eggs'],
-        description: 'Delicious homemade chocolate chip cookies',
-        tagline: 'Classic comfort in every bite',
+        category: 'Pastries',
+        rating_count: 124,
+        ingredients: ['flour', 'butter', 'dark chocolate', 'eggs', 'yeast', 'sugar'],
+        description: 'Buttery, flaky pastry filled with rich Belgian chocolate. A classic French treat perfect for breakfast or dessert.',
+        tagline: 'Classic French indulgence',
         images: [
-            'https://via.placeholder.com/600x600/8B4513/FFFFFF?text=Cookie1',
-            'https://via.placeholder.com/600x600/8B4513/FFFFFF?text=Cookie2'
-        ],
-        stock: 100
-    },
-    {
-        title: 'Blueberry Muffins',
-        price: 8.99,
-        thumbnail: 'https://via.placeholder.com/300x300/4169E1/FFFFFF?text=Muffins',
-        rating: 4.6,
-        category: 'Muffins',
-        rating_count: 85,
-        ingredients: ['flour', 'blueberries', 'sugar', 'butter', 'eggs', 'milk'],
-        description: 'Fresh baked blueberry muffins',
-        tagline: 'Morning perfection',
-        images: [
-            'https://via.placeholder.com/600x600/4169E1/FFFFFF?text=Muffin1'
+            'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800',
+            'https://images.unsplash.com/photo-1558326567-98166e232c77?w=800'
         ],
         stock: 50
     },
     {
-        title: 'Sourdough Bread',
-        price: 6.50,
-        thumbnail: 'https://via.placeholder.com/300x300/D2691E/FFFFFF?text=Bread',
+        title: 'Butter Croissant',
+        price: 3.49,
+        thumbnail: 'https://images.unsplash.com/photo-1549903072-7e6e0bedb7fb?w=400',
+        rating: 4.9,
+        category: 'Pastries',
+        rating_count: 256,
+        ingredients: ['flour', 'butter', 'eggs', 'yeast', 'sugar', 'salt'],
+        description: 'Light, flaky layers of pure butter goodness. Our signature croissant is made with premium European butter.',
+        tagline: 'Pure butter perfection',
+        images: ['https://images.unsplash.com/photo-1549903072-7e6e0bedb7fb?w=800'],
+        stock: 80
+    },
+    {
+        title: 'Almond Croissant',
+        price: 5.49,
+        thumbnail: 'https://images.unsplash.com/photo-1623334044303-241021148842?w=400',
+        rating: 4.7,
+        category: 'Pastries',
+        rating_count: 98,
+        ingredients: ['flour', 'butter', 'almonds', 'almond cream', 'eggs', 'sugar'],
+        description: 'Croissant filled with almond cream and topped with sliced almonds and powdered sugar.',
+        tagline: 'Nutty indulgence',
+        images: ['https://images.unsplash.com/photo-1623334044303-241021148842?w=800'],
+        stock: 40
+    },
+    {
+        title: 'Danish Pastry',
+        price: 4.29,
+        thumbnail: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=400',
+        rating: 4.6,
+        category: 'Pastries',
+        rating_count: 87,
+        ingredients: ['flour', 'butter', 'fruit jam', 'cream cheese', 'eggs'],
+        description: 'Flaky pastry with fruit filling and cream cheese, finished with a sweet glaze.',
+        tagline: 'Danish delight',
+        images: ['https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=800'],
+        stock: 35
+    },
+    {
+        title: 'Cinnamon Roll',
+        price: 4.99,
+        sale_price: 4.29,
+        thumbnail: 'https://images.unsplash.com/photo-1609126979532-c48ce8a70add?w=400',
+        rating: 4.8,
+        category: 'Pastries',
+        rating_count: 178,
+        ingredients: ['flour', 'butter', 'cinnamon', 'brown sugar', 'cream cheese frosting'],
+        description: 'Soft, gooey cinnamon roll swirled with cinnamon sugar and topped with cream cheese frosting.',
+        tagline: 'Warm cinnamon heaven',
+        images: ['https://images.unsplash.com/photo-1609126979532-c48ce8a70add?w=800'],
+        stock: 45
+    },
+
+    // ========== BREADS ==========
+    {
+        title: 'Artisan Sourdough Bread',
+        price: 8.99,
+        thumbnail: 'https://images.unsplash.com/photo-1585478259715-876acc5be8eb?w=400',
         rating: 4.9,
         category: 'Breads',
-        rating_count: 200,
+        rating_count: 312,
         ingredients: ['flour', 'water', 'salt', 'sourdough starter'],
-        description: 'Artisan sourdough bread',
-        tagline: 'Crafted with love',
+        description: 'Traditional sourdough with a perfectly crispy crust and soft, tangy interior. 24-hour fermentation.',
+        tagline: 'Artisan crafted perfection',
         images: [
-            'https://via.placeholder.com/600x600/D2691E/FFFFFF?text=Bread1',
-            'https://via.placeholder.com/600x600/D2691E/FFFFFF?text=Bread2'
+            'https://images.unsplash.com/photo-1585478259715-876acc5be8eb?w=800',
+            'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800'
+        ],
+        stock: 25
+    },
+    {
+        title: 'French Baguette',
+        price: 4.49,
+        thumbnail: 'https://images.unsplash.com/photo-1568471173242-461f0a730452?w=400',
+        rating: 4.8,
+        category: 'Breads',
+        rating_count: 234,
+        ingredients: ['flour', 'water', 'yeast', 'salt'],
+        description: 'Crispy golden crust with a light, airy interior. Baked fresh daily using traditional French techniques.',
+        tagline: 'Authentically French',
+        images: ['https://images.unsplash.com/photo-1568471173242-461f0a730452?w=800'],
+        stock: 40
+    },
+    {
+        title: 'Whole Wheat Loaf',
+        price: 6.99,
+        thumbnail: 'https://images.unsplash.com/photo-1598373182133-52452f7691ef?w=400',
+        rating: 4.5,
+        category: 'Breads',
+        rating_count: 156,
+        ingredients: ['whole wheat flour', 'water', 'honey', 'yeast', 'salt'],
+        description: 'Hearty whole wheat bread made with 100% whole grain flour. Perfect for sandwiches and toast.',
+        tagline: 'Healthy and hearty',
+        images: ['https://images.unsplash.com/photo-1598373182133-52452f7691ef?w=800'],
+        stock: 30
+    },
+    {
+        title: 'Ciabatta Bread',
+        price: 5.99,
+        thumbnail: 'https://images.unsplash.com/photo-1574085733277-851d9d856a3a?w=400',
+        rating: 4.7,
+        category: 'Breads',
+        rating_count: 145,
+        ingredients: ['flour', 'water', 'olive oil', 'yeast', 'salt'],
+        description: 'Italian-style bread with a light, airy interior and crispy crust. Perfect for paninis.',
+        tagline: 'Italian classic',
+        images: ['https://images.unsplash.com/photo-1574085733277-851d9d856a3a?w=800'],
+        stock: 35
+    },
+    {
+        title: 'Multigrain Loaf',
+        price: 7.49,
+        thumbnail: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=400',
+        rating: 4.6,
+        category: 'Breads',
+        rating_count: 98,
+        ingredients: ['wheat flour', 'oats', 'sunflower seeds', 'flax seeds', 'honey'],
+        description: 'Nutritious blend of whole grains and seeds. Rich in fiber and flavor.',
+        tagline: 'Packed with goodness',
+        images: ['https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=800'],
+        stock: 25
+    },
+
+    // ========== DESSERTS ==========
+    {
+        title: 'Strawberry Cheesecake Slice',
+        price: 6.99,
+        sale_price: 5.99,
+        thumbnail: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400',
+        rating: 4.8,
+        category: 'Desserts',
+        rating_count: 189,
+        ingredients: ['cream cheese', 'strawberries', 'graham crackers', 'sugar', 'eggs'],
+        description: 'Creamy New York style cheesecake topped with fresh strawberry glaze.',
+        tagline: 'Creamy strawberry bliss',
+        images: ['https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=800'],
+        stock: 20
+    },
+    {
+        title: 'Rainbow Macarons Box',
+        price: 12.99,
+        thumbnail: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=400',
+        rating: 4.9,
+        category: 'Desserts',
+        rating_count: 267,
+        ingredients: ['almond flour', 'egg whites', 'sugar', 'various fillings'],
+        description: 'Assorted French macarons in raspberry, vanilla, pistachio, chocolate, and lavender flavors.',
+        tagline: 'Six flavors of joy',
+        images: [
+            'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=800',
+            'https://images.unsplash.com/photo-1558326567-98ae2405596b?w=800'
         ],
         stock: 30
     },
     {
-        title: 'Vanilla Cupcakes',
-        price: 12.99,
-        sale_price: 9.99,
-        thumbnail: 'https://via.placeholder.com/300x300/FFB6C1/FFFFFF?text=Cupcakes',
-        rating: 4.7,
-        category: 'Cakes',
-        rating_count: 150,
-        ingredients: ['flour', 'sugar', 'butter', 'eggs', 'vanilla extract', 'frosting'],
-        description: 'Light and fluffy vanilla cupcakes with buttercream frosting',
-        tagline: 'Party perfect',
-        images: [
-            'https://via.placeholder.com/600x600/FFB6C1/FFFFFF?text=Cupcake1'
-        ],
-        stock: 75
+        title: 'Tiramisu',
+        price: 7.99,
+        thumbnail: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400',
+        rating: 4.9,
+        category: 'Desserts',
+        rating_count: 198,
+        ingredients: ['mascarpone', 'espresso', 'ladyfingers', 'cocoa', 'eggs'],
+        description: 'Classic Italian dessert with layers of espresso-soaked ladyfingers and creamy mascarpone.',
+        tagline: 'Pick me up in a cup',
+        images: ['https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800'],
+        stock: 15
     },
     {
-        title: 'Apple Pie',
-        price: 15.99,
-        thumbnail: 'https://via.placeholder.com/300x300/CD853F/FFFFFF?text=Pie',
-        rating: 5.0,
-        category: 'Pies',
-        rating_count: 180,
-        ingredients: ['apples', 'flour', 'sugar', 'cinnamon', 'butter'],
-        description: 'Classic American apple pie',
-        tagline: 'Made like grandma used to',
-        images: [
-            'https://via.placeholder.com/600x600/CD853F/FFFFFF?text=Pie1',
-            'https://via.placeholder.com/600x600/CD853F/FFFFFF?text=Pie2'
-        ],
-        stock: 20
+        title: 'Chocolate Brownie',
+        price: 4.49,
+        thumbnail: 'https://images.unsplash.com/photo-1564355808539-22fda35bed7e?w=400',
+        rating: 4.7,
+        category: 'Desserts',
+        rating_count: 321,
+        ingredients: ['dark chocolate', 'butter', 'sugar', 'flour', 'eggs', 'walnuts'],
+        description: 'Rich, fudgy brownies made with premium dark chocolate and topped with walnuts.',
+        tagline: 'Fudgy chocolate heaven',
+        images: ['https://images.unsplash.com/photo-1564355808539-22fda35bed7e?w=800'],
+        stock: 60
+    },
+    {
+        title: 'Crème Brûlée',
+        price: 8.49,
+        thumbnail: 'https://images.unsplash.com/photo-1470324161839-ce2bb6fa6bc3?w=400',
+        rating: 4.8,
+        category: 'Desserts',
+        rating_count: 145,
+        ingredients: ['cream', 'egg yolks', 'vanilla', 'sugar'],
+        description: 'Silky vanilla custard with a caramelized sugar crust. Created fresh daily.',
+        tagline: 'Crack into perfection',
+        images: ['https://images.unsplash.com/photo-1470324161839-ce2bb6fa6bc3?w=800'],
+        stock: 18
+    },
+    {
+        title: 'Chocolate Lava Cake',
+        price: 7.99,
+        sale_price: 6.99,
+        thumbnail: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400',
+        rating: 4.9,
+        category: 'Desserts',
+        rating_count: 234,
+        ingredients: ['dark chocolate', 'butter', 'eggs', 'sugar', 'flour'],
+        description: 'Warm chocolate cake with a molten center. Served with vanilla ice cream.',
+        tagline: 'Melting moments',
+        images: ['https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800'],
+        stock: 22
+    },
+
+    // ========== CUPCAKES ==========
+    {
+        title: 'Red Velvet Cupcake',
+        price: 4.49,
+        thumbnail: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=400',
+        rating: 4.8,
+        category: 'Cupcakes',
+        rating_count: 198,
+        ingredients: ['flour', 'cocoa', 'red food coloring', 'cream cheese frosting', 'butter'],
+        description: 'Classic red velvet cupcake with creamy cream cheese frosting.',
+        tagline: 'Velvety smooth perfection',
+        images: ['https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=800'],
+        stock: 48
+    },
+    {
+        title: 'Chocolate Fudge Cupcake',
+        price: 4.29,
+        thumbnail: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=400',
+        rating: 4.7,
+        category: 'Cupcakes',
+        rating_count: 167,
+        ingredients: ['dark chocolate', 'flour', 'butter', 'eggs', 'chocolate ganache'],
+        description: 'Rich chocolate cupcake topped with silky chocolate ganache.',
+        tagline: 'Double chocolate delight',
+        images: ['https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=800'],
+        stock: 55
+    },
+    {
+        title: 'Vanilla Bean Cupcake',
+        price: 3.99,
+        thumbnail: 'https://images.unsplash.com/photo-1519869325930-281384150729?w=400',
+        rating: 4.6,
+        category: 'Cupcakes',
+        rating_count: 143,
+        ingredients: ['flour', 'vanilla bean', 'butter', 'eggs', 'buttercream frosting'],
+        description: 'Light and fluffy vanilla cupcake with real vanilla bean buttercream.',
+        tagline: 'Simple vanilla bliss',
+        images: ['https://images.unsplash.com/photo-1519869325930-281384150729?w=800'],
+        stock: 70
+    },
+    {
+        title: 'Salted Caramel Cupcake',
+        price: 4.79,
+        thumbnail: 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=400',
+        rating: 4.9,
+        category: 'Cupcakes',
+        rating_count: 212,
+        ingredients: ['flour', 'caramel', 'sea salt', 'butter', 'brown sugar'],
+        description: 'Sweet and salty perfection with caramel filling and salted caramel frosting.',
+        tagline: 'Sweet meets salty',
+        images: ['https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800'],
+        stock: 42
+    },
+    {
+        title: 'Lemon Zest Cupcake',
+        price: 4.49,
+        thumbnail: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400',
+        rating: 4.5,
+        category: 'Cupcakes',
+        rating_count: 89,
+        ingredients: ['flour', 'lemon zest', 'lemon curd', 'butter', 'cream cheese'],
+        description: 'Bright and zesty lemon cupcake with lemon curd filling and cream cheese frosting.',
+        tagline: 'Citrus sunshine',
+        images: ['https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800'],
+        stock: 38
+    },
+    {
+        title: 'Strawberry Shortcake Cupcake',
+        price: 4.99,
+        thumbnail: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=400',
+        rating: 4.7,
+        category: 'Cupcakes',
+        rating_count: 156,
+        ingredients: ['flour', 'strawberries', 'whipped cream', 'vanilla', 'butter'],
+        description: 'Light vanilla cupcake filled with fresh strawberries and topped with whipped cream.',
+        tagline: 'Summer in a cupcake',
+        images: ['https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=800'],
+        stock: 35
     }
 ];
 
