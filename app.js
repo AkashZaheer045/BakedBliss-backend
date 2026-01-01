@@ -4,7 +4,7 @@ const moment = require("moment");
 const express = require("express");
 const bodyParser = require("body-parser");
 require('dotenv').config()
-const { request_getters, request_parser, not_found, allowed_methods } = require('eb-butler-utils')
+const { request_getters, request_parser, not_found } = require('eb-butler-utils')
 // const common = require('./helpers/common') // Assuming this helper exists or will be created
 // const constants = require('./config/constants.json') // Assuming this config exists
 //--//
@@ -28,8 +28,20 @@ console_stamp(console, {
   pattern: "YYYY-MM-DD HH:mm:ss",
   formatter: function () { return moment().format("YYYY-MM-DD HH:mm:ss"); }
 });
-//allow methods for postman
-app.use(allowed_methods);
+//allow all standard HTTP methods (custom replacement for eb-butler-utils allowed_methods which only allows POST)
+const customAllowedMethods = (req, res, next) => {
+  req.statusMessage = null;
+  req.req_start_time = new Date().toISOString();
+  const method = String(req.method).trim().toUpperCase();
+  const allowedMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
+  if (method === "OPTIONS") {
+    return next(200);
+  } else if (!allowedMethods.includes(method)) {
+    return next(405);
+  }
+  return next();
+};
+app.use(customAllowedMethods);
 //------------------------------------//
 morgan.token("date", function () {
   return moment().format("YYYY-MM-DD HH:mm:ss");
