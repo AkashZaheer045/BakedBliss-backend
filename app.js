@@ -8,6 +8,9 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 const app = express();
 
+// Trust the first proxy (Vercel/Heroku/AWS) - Required for correct IP resolution & rate limiting
+app.set('trust proxy', 1);
+
 // Middleware imports
 const { requestLogger } = require('./middleware/request_logger');
 const authMiddleware = require('./middleware/auth');
