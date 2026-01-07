@@ -88,6 +88,10 @@ app.get('/health', function (req, res) {
     res.status(200).json({ status: 'OK', timestamp: new Date() });
 });
 
+app.get('/', function (req, res) {
+    res.status(200).json({ status: 'OK', message: 'Baked Bliss Backend is running', timestamp: new Date() });
+});
+
 //------------------------------------//
 // ENDPOINT REGISTRY
 // Per QAutos pattern: Register all valid endpoints upfront
