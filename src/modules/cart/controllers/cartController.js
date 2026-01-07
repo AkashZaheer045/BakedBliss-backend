@@ -7,7 +7,7 @@ const CartService = require('../services/cartService');
 // Add item to the cart
 const addItemToCart = async (req, res) => {
     try {
-        const userId = req.user.uid;
+        const userId = req.user.user_id;
         const { productId, quantity } = req.body;
 
         if (!productId || !quantity) {
@@ -45,7 +45,7 @@ const addItemToCart = async (req, res) => {
 // View cart items
 const viewCart = async (req, res) => {
     try {
-        const userId = req.user.uid;
+        const userId = req.user.user_id;
 
         const [cart, error] = await CartService.getCart(userId);
 
@@ -75,7 +75,7 @@ const viewCart = async (req, res) => {
 // Update cart item
 const updateCartItem = async (req, res) => {
     try {
-        const userId = req.user.uid;
+        const userId = req.user.user_id;
         const { productId, quantity } = req.body;
 
         if (!productId || quantity === undefined) {
@@ -113,7 +113,7 @@ const updateCartItem = async (req, res) => {
 // Remove item from cart
 const removeItemFromCart = async (req, res) => {
     try {
-        const userId = req.user.uid;
+        const userId = req.user.user_id;
         const { productId } = req.body;
 
         if (!productId) {
@@ -151,7 +151,7 @@ const removeItemFromCart = async (req, res) => {
 // Clear entire cart
 const clearCart = async (req, res) => {
     try {
-        const userId = req.user.uid;
+        const userId = req.user.user_id;
 
         const [_success, error] = await CartService.clearCart(userId);
 

@@ -10,9 +10,13 @@ ValidationRules.rule = method => {
     switch (method) {
         case 'addFavorite': {
             return [
-                param('user_id').isInt({ min: 1 }).withMessage('Invalid user ID'),
+                param('user_id')
+                    .exists()
+                    .withMessage('User ID is required')
+                    .isString()
+                    .withMessage('Invalid user ID format'),
 
-                body('product_id')
+                body('productId')
                     .notEmpty()
                     .withMessage('Product ID is required')
                     .isInt({ min: 1 })
@@ -22,14 +26,24 @@ ValidationRules.rule = method => {
 
         case 'removeFavorite': {
             return [
-                param('user_id').isInt({ min: 1 }).withMessage('Invalid user ID'),
+                param('user_id')
+                    .exists()
+                    .withMessage('User ID is required')
+                    .isString()
+                    .withMessage('Invalid user ID format'),
 
                 param('product_id').isInt({ min: 1 }).withMessage('Invalid product ID')
             ];
         }
 
         case 'listFavorites': {
-            return [param('user_id').isInt({ min: 1 }).withMessage('Invalid user ID')];
+            return [
+                param('user_id')
+                    .exists()
+                    .withMessage('User ID is required')
+                    .isString()
+                    .withMessage('Invalid user ID format')
+            ];
         }
 
         case 'updateProfile': {

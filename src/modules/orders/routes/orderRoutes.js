@@ -38,9 +38,7 @@ const routes = function () {
     router.route('/history').get(orderRules.rule('list'), Validation.validate, viewOrderHistory);
 
     // Get orders for user
-    router
-        .route('/user/:userId')
-        .get(orderRules.rule('list'), Validation.validate, viewOrderHistory);
+    router.route('/user/:userId').get(orderRules.rule('list'), Validation.validate, viewOrderHistory);
 
     // Get order status
     router.route('/status/:orderId').get(getOrderStatus);
@@ -49,9 +47,7 @@ const routes = function () {
     router.route('/details/:orderId').get(getOrderStatus);
 
     // Cancel order
-    router
-        .route('/cancel/:orderId')
-        .put(orderRules.rule('cancel'), Validation.validate, cancelOrder);
+    router.route('/cancel/:orderId').put(orderRules.rule('cancel'), Validation.validate, cancelOrder);
 
     //------------------------------------//
     // ADMIN ROUTES
@@ -61,9 +57,7 @@ const routes = function () {
     router.route('/all').get(orderRules.rule('list'), Validation.validate, getAllOrders);
 
     // Update order status (admin)
-    router
-        .route('/status')
-        .put(orderRules.rule('updateStatus'), Validation.validate, updateOrderStatus);
+    router.route('/status').put(orderRules.rule('updateStatus'), Validation.validate, updateOrderStatus);
 
     // Order stats (admin)
     router.route('/stats').get(getOrderStats);

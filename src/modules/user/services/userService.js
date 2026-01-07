@@ -81,6 +81,7 @@ const updateUserProfile = async (userId, updateData) => {
  * Add product to favorites
  */
 const addFavorite = async (userId, productId) => {
+    console.log(`[UserService] Adding favorite: User ${userId}, Product ${productId}`);
     try {
         const productInstance = new db(models.products);
         const favoriteInstance = new db(models.favorites);

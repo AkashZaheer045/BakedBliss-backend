@@ -10,7 +10,7 @@ const addFavorite = async (req, res) => {
         const { user_id } = req.params;
         const { productId } = req.body;
 
-        if (!req.user || req.user.uid !== user_id) {
+        if (!req.user || req.user.user_id !== user_id) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 
@@ -51,7 +51,7 @@ const removeFavorite = async (req, res) => {
     try {
         const { user_id, product_id } = req.params;
 
-        if (!req.user || req.user.uid !== user_id) {
+        if (!req.user || req.user.user_id !== user_id) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 
@@ -76,7 +76,7 @@ const listFavorites = async (req, res) => {
     try {
         const { user_id } = req.params;
 
-        if (!req.user || req.user.uid !== user_id) {
+        if (!req.user || req.user.user_id !== user_id) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 

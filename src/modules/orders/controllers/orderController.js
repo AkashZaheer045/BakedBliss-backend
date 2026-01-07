@@ -7,18 +7,18 @@ const OrderService = require('../services/orderService');
 // Confirm and place an order
 const confirmOrder = async (req, res) => {
     try {
-        const userId = req.user.uid;
-        const { cartItems, deliveryAddress, totalAmount } = req.body;
+        const userId = req.user.user_id;
+        const { cart_items, delivery_address, total_amount } = req.body;
 
-        if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+        if (!cart_items || !Array.isArray(cart_items) || cart_items.length === 0) {
             return res.status(400).json({ status: 'error', message: 'Cart items are required' });
         }
 
         const [order, error] = await OrderService.createOrder(
             userId,
-            cartItems,
-            deliveryAddress,
-            totalAmount
+            cart_items,
+            delivery_address,
+            total_amount
         );
 
         if (error) {
@@ -48,7 +48,7 @@ const confirmOrder = async (req, res) => {
 // View order history
 const viewOrderHistory = async (req, res) => {
     try {
-        const userId = req.user.uid;
+        const userId = req.user.user_id;
 
         const [orders, error] = await OrderService.getOrderHistory(userId);
 
@@ -165,7 +165,7 @@ const updateOrderStatus = async (req, res) => {
 const cancelOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
-        const { reason } = req.body;
+        const { reason } = req.body || {};
 
         const [result, error] = await OrderService.cancelOrder(orderId, reason);
 

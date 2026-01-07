@@ -36,7 +36,7 @@ ValidationRules.rule = method => {
         }
 
         case 'getById': {
-            return [param('order_id').isInt({ min: 1 }).withMessage('Invalid order ID')];
+            return [param('orderId').isString().withMessage('Invalid order ID')];
         }
 
         case 'list': {
@@ -67,7 +67,7 @@ ValidationRules.rule = method => {
 
         case 'updateStatus': {
             return [
-                param('order_id').isInt({ min: 1 }).withMessage('Invalid order ID'),
+                body('order_id').isString().withMessage('Invalid order ID'),
 
                 body('status')
                     .notEmpty()
@@ -86,7 +86,7 @@ ValidationRules.rule = method => {
 
         case 'cancel': {
             return [
-                param('order_id').isInt({ min: 1 }).withMessage('Invalid order ID'),
+                param('orderId').isString().withMessage('Invalid order ID'),
 
                 body('reason')
                     .optional()

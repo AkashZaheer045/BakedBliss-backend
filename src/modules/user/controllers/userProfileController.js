@@ -36,7 +36,7 @@ const updateUserProfile = async (req, res) => {
         const { fullName, phoneNumber, profilePicture } = req.body;
 
         // Ensure authenticated user matches path user
-        if (!req.user || req.user.uid !== userId) {
+        if (!req.user || req.user.user_id !== userId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 

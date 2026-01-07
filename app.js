@@ -1,7 +1,4 @@
-/**
- * Baked Bliss Backend - Main Application
- * Per QAutos pattern: Centralized auth, endpoint registry, and route handling
- */
+/**  Baked Bliss Backend - Main Application */
 const cors = require('cors');
 const morgan = require('morgan');
 const moment = require('moment');
@@ -32,7 +29,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Static Files
 //------------------------------------//
 app.use('/uploads', express.static(__dirname + '/uploads'));
-app.use('/public', express.static(__dirname + '/public'));
 
 //------------------------------------//
 // Global Rate Limiting
@@ -146,7 +142,6 @@ app.use(authMiddleware);
 
 //------------------------------------//
 // MODULE ROUTES
-// Per QAutos pattern: Clean route registration, no auth at route level
 //------------------------------------//
 app.use('/api/v1/auth', require('./src/modules/auth/app.js')());
 app.use('/api/v1/products', require('./src/modules/products/app.js')());
@@ -195,8 +190,7 @@ const sequelize = require('./db/sequelize/sequelize');
 
 console.log('Server host:', os.hostname());
 
-sequelize.connection
-    .authenticate()
+sequelize.connection.authenticate()
     .then(function () {
         console.log('DB Connection Successful');
 
