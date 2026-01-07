@@ -49,7 +49,7 @@ require('./associations')(models);
 // Database instance wrapper class
 const DatabaseInstance = require('./instance');
 
-console.log('✅ Sequelize models loaded:', Object.keys(models).join(', '));
+// console.log('✅ Sequelize models loaded:', Object.keys(models).join(', '));
 
 module.exports = {
     config,

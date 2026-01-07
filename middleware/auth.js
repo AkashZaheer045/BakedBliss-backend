@@ -15,6 +15,7 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY || 'your-default-secret-key';
 const allowedPaths = [
     // Auth routes - public
     '/api/v1/auth/login',
+    '/api/v1/auth/login-otp',
     '/api/v1/auth/register',
     '/api/v1/auth/signup',
     '/api/v1/auth/verify-otp',
@@ -22,6 +23,9 @@ const allowedPaths = [
     '/api/v1/auth/forgot-password',
     '/api/v1/auth/reset-password',
     '/api/v1/auth/google-login',
+    '/api/v1/auth/social-login',
+    '/api/v1/auth/refresh-token',
+    '/api/v1/auth/logout',
 
     // Products - public browsing
     '/api/v1/products',

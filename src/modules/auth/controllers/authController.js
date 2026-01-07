@@ -1,29 +1,56 @@
 /**
- * Auth Controller
+ * Auth Controller - Baked Bliss
  * Handles HTTP requests/responses, delegates business logic to AuthService
+ * Endpoints: signup, login, verify-otp, resend-otp, forgot-password, reset-password, refresh-token, change-password
  */
 const AuthService = require('../services/authService');
 
-// Sign-up function
+/**
+ * Helper to send error response
+ */
+const sendError = (res, error, defaultMessage = 'An error occurred') => {
+    const status = error.status || error.statusCode || 500;
+    const message = error.message || defaultMessage;
+    return res.status(status).json({
+        status: 'error',
+        statusCode: status,
+        message,
+        data: {}
+    });
+};
+
+/**
+ * Helper to send success response
+ */
+const sendSuccess = (res, data, message = 'Success', statusCode = 200) => {
+    return res.status(statusCode).json({
+        status: 'success',
+        statusCode,
+        message,
+        data
+    });
+};
+
+/**
+ * POST /auth/signup
+ * POST /auth/register
+ * Register a new user
+ */
 const signUpUser = async (req, res) => {
     try {
-        const {
-            fullName,
-            email,
-            password,
-            profilePicture,
-            addresses,
-            selectedAddressId,
-            phoneNumber,
-            role
-        } = req.body;
+        const { fullName, email, password, profilePicture, addresses, selectedAddressId, phoneNumber, role } =
+            req.body;
 
         if (!fullName) {
-            return res.status(400).json({ message: 'Invalid input: fullName is required.' });
+            return sendError(res, { status: 400, message: 'Full name is required' });
+        }
+
+        if (!email) {
+            return sendError(res, { status: 400, message: 'Email is required' });
         }
 
         if (!password) {
-            return res.status(400).json({ message: 'Invalid input: password is required.' });
+            return sendError(res, { status: 400, message: 'Password is required' });
         }
 
         const [result, error] = await AuthService.signUp({
@@ -38,67 +65,273 @@ const signUpUser = async (req, res) => {
         });
 
         if (error) {
-            console.error('Error signing up user:', error);
-            return res.status(error.status || 500).json({
-                message: 'failed',
-                error: error.message || 'An error occurred during signup.'
-            });
+            console.error('[Auth] Signup error:', error.message);
+            return sendError(res, error, 'An error occurred during signup');
         }
 
-        res.status(201).json({ message: 'success', data: result.user, token: result.token });
+        return sendSuccess(
+            res,
+            {
+                user: result.user,
+                accessToken: result.accessToken,
+                refreshToken: result.refreshToken
+            },
+            'User registered successfully',
+            201
+        );
     } catch (error) {
-        console.error('Error signing up user:', error);
-        res.status(500).json({ message: 'failed', error: 'An error occurred during signup.' });
+        console.error('[Auth] Signup exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred during signup' });
     }
 };
 
-// Sign-in function
+/**
+ * POST /auth/login
+ * Sign in user - returns tokens directly (no OTP)
+ */
 const signInUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({
-                message: 'failed',
-                error: 'Email and password are required.'
-            });
+            return sendError(res, { status: 400, message: 'Email and password are required' });
         }
 
         const [result, error] = await AuthService.signIn(email, password);
 
         if (error) {
-            console.error('Error signing in user:', error);
-            return res.status(error.status || 500).json({
-                message: 'failed',
-                error: error.message || 'An error occurred during sign-in.'
-            });
+            console.error('[Auth] Login error:', error.message);
+            return sendError(res, error, 'An error occurred during login');
         }
 
-        res.status(200).json({ message: 'success', data: result.user, token: result.token });
+        return sendSuccess(
+            res,
+            {
+                user: result.user,
+                accessToken: result.accessToken,
+                refreshToken: result.refreshToken
+            },
+            'Login successful'
+        );
     } catch (error) {
-        console.error('Error signing in user:', error);
-        res.status(500).json({ message: 'failed', error: 'An error occurred during sign-in.' });
+        console.error('[Auth] Login exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred during login' });
     }
 };
 
-// Social login function
+/**
+ * POST /auth/login-otp
+ * Sign in user with OTP - sends OTP to email
+ */
+const signInWithOTP = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return sendError(res, { status: 400, message: 'Email and password are required' });
+        }
+
+        const [result, error] = await AuthService.signInWithOTP(email, password);
+
+        if (error) {
+            console.error('[Auth] OTP login error:', error.message);
+            return sendError(res, error, 'An error occurred during login');
+        }
+
+        return sendSuccess(res, result, 'OTP sent to your email');
+    } catch (error) {
+        console.error('[Auth] OTP login exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred during login' });
+    }
+};
+
+/**
+ * POST /auth/verify-otp
+ * Verify OTP and complete login
+ */
+const verifyOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return sendError(res, { status: 400, message: 'Email and OTP are required' });
+        }
+
+        const [result, error] = await AuthService.verifyOTPAndLogin(email, otp);
+
+        if (error) {
+            console.error('[Auth] OTP verification error:', error.message);
+            return sendError(res, error, 'OTP verification failed');
+        }
+
+        return sendSuccess(
+            res,
+            {
+                user: result.user,
+                accessToken: result.accessToken,
+                refreshToken: result.refreshToken
+            },
+            'Login successful'
+        );
+    } catch (error) {
+        console.error('[Auth] OTP verification exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred during OTP verification' });
+    }
+};
+
+/**
+ * POST /auth/resend-otp
+ * Resend OTP to email
+ */
+const resendOTP = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return sendError(res, { status: 400, message: 'Email is required' });
+        }
+
+        const [result, error] = await AuthService.resendOTP(email);
+
+        if (error) {
+            console.error('[Auth] Resend OTP error:', error.message);
+            return sendError(res, error, 'Failed to resend OTP');
+        }
+
+        return sendSuccess(res, result, 'OTP sent successfully');
+    } catch (error) {
+        console.error('[Auth] Resend OTP exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred while resending OTP' });
+    }
+};
+
+/**
+ * POST /auth/forgot-password
+ * Request password reset email
+ */
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return sendError(res, { status: 400, message: 'Email is required' });
+        }
+
+        const [result, error] = await AuthService.requestPasswordReset(email);
+
+        if (error) {
+            console.error('[Auth] Forgot password error:', error.message);
+            return sendError(res, error, 'Failed to process password reset request');
+        }
+
+        return sendSuccess(res, { email: result.email }, result.message);
+    } catch (error) {
+        console.error('[Auth] Forgot password exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred' });
+    }
+};
+
+/**
+ * POST /auth/reset-password
+ * Reset password with token
+ */
+const resetPassword = async (req, res) => {
+    try {
+        const { email, token, password } = req.body;
+
+        if (!email || !token || !password) {
+            return sendError(res, { status: 400, message: 'Email, token, and new password are required' });
+        }
+
+        const [result, error] = await AuthService.resetPassword(email, token, password);
+
+        if (error) {
+            console.error('[Auth] Reset password error:', error.message);
+            return sendError(res, error, 'Failed to reset password');
+        }
+
+        return sendSuccess(res, {}, result.message);
+    } catch (error) {
+        console.error('[Auth] Reset password exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred while resetting password' });
+    }
+};
+
+/**
+ * POST /auth/refresh-token
+ * Get new access token using refresh token
+ */
+const refreshToken = async (req, res) => {
+    try {
+        const { refreshToken: token } = req.body;
+
+        if (!token) {
+            return sendError(res, { status: 400, message: 'Refresh token is required' });
+        }
+
+        const [result, error] = await AuthService.refreshAccessToken(token);
+
+        if (error) {
+            console.error('[Auth] Token refresh error:', error.message);
+            return sendError(res, error, 'Failed to refresh token');
+        }
+
+        return sendSuccess(
+            res,
+            {
+                accessToken: result.accessToken,
+                user: result.user
+            },
+            'Token refreshed successfully'
+        );
+    } catch (error) {
+        console.error('[Auth] Token refresh exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred while refreshing token' });
+    }
+};
+
+/**
+ * POST /auth/change-password
+ * Change password for authenticated user
+ */
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user?.user_id || req.userId;
+
+        if (!userId) {
+            return sendError(res, { status: 401, message: 'Authentication required' });
+        }
+
+        if (!currentPassword || !newPassword) {
+            return sendError(res, { status: 400, message: 'Current password and new password are required' });
+        }
+
+        const [result, error] = await AuthService.changePassword(userId, currentPassword, newPassword);
+
+        if (error) {
+            console.error('[Auth] Change password error:', error.message);
+            return sendError(res, error, 'Failed to change password');
+        }
+
+        return sendSuccess(res, {}, result.message);
+    } catch (error) {
+        console.error('[Auth] Change password exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred while changing password' });
+    }
+};
+
+/**
+ * POST /auth/google-login
+ * Social login with Google
+ */
 const socialLogin = async (req, res) => {
     try {
-        const {
-            userId,
-            fullName,
-            email,
-            profilePicture,
-            addresses,
-            selectedAddressId,
-            phoneNumber,
-            pushToken
-        } = req.body;
+        const { userId, fullName, email, profilePicture, addresses, selectedAddressId, phoneNumber, pushToken } =
+            req.body;
 
         if (!userId || !fullName) {
-            return res
-                .status(400)
-                .json({ message: 'Invalid input: userId and fullName are required.' });
+            return sendError(res, { status: 400, message: 'userId and fullName are required' });
         }
 
         const [result, error] = await AuthService.socialLogin({
@@ -113,22 +346,50 @@ const socialLogin = async (req, res) => {
         });
 
         if (error) {
-            console.error('Error during social login:', error);
-            return res.status(error.status || 500).json({
-                message: 'failed',
-                error: error.message || 'An error occurred during social login.'
-            });
+            console.error('[Auth] Social login error:', error.message);
+            return sendError(res, error, 'An error occurred during social login');
         }
 
         const statusCode = result.isNew ? 201 : 200;
-        res.status(statusCode).json({ message: 'success', data: result.user, token: result.token });
+        const message = result.isNew ? 'Account created successfully' : 'Login successful';
+
+        return sendSuccess(
+            res,
+            {
+                user: result.user,
+                accessToken: result.accessToken,
+                refreshToken: result.refreshToken,
+                isNew: result.isNew
+            },
+            message,
+            statusCode
+        );
     } catch (error) {
-        console.error('Error during social login:', error);
-        res.status(500).json({
-            message: 'failed',
-            error: 'An error occurred during social login.'
-        });
+        console.error('[Auth] Social login exception:', error);
+        return sendError(res, { status: 500, message: 'An error occurred during social login' });
     }
 };
 
-module.exports = { signUpUser, signInUser, socialLogin };
+/**
+ * POST /auth/logout
+ * Logout user (client-side token invalidation)
+ */
+const logout = async (req, res) => {
+    // For JWT-based auth, logout is typically handled client-side by removing tokens
+    // Server-side token blacklisting would require Redis or database storage
+    return sendSuccess(res, {}, 'Logged out successfully');
+};
+
+module.exports = {
+    signUpUser,
+    signInUser,
+    signInWithOTP,
+    verifyOTP,
+    resendOTP,
+    forgotPassword,
+    resetPassword,
+    refreshToken,
+    changePassword,
+    socialLogin,
+    logout
+};

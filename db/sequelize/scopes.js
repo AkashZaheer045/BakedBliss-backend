@@ -94,6 +94,4 @@ module.exports = function (models) {
             }
         });
     }
-
-    console.log('✅ Model scopes initialized');
 };

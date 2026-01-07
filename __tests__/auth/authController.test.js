@@ -1,5 +1,6 @@
 /**
  * Auth Controller Tests
+ * Updated to match new response format and password requirements
  */
 const request = require('supertest');
 
@@ -7,6 +8,13 @@ const request = require('supertest');
 const mockAuthService = {
     signUp: jest.fn(),
     signIn: jest.fn(),
+    signInWithOTP: jest.fn(),
+    verifyOTPAndLogin: jest.fn(),
+    resendOTP: jest.fn(),
+    requestPasswordReset: jest.fn(),
+    resetPassword: jest.fn(),
+    refreshAccessToken: jest.fn(),
+    changePassword: jest.fn(),
     socialLogin: jest.fn()
 };
 
@@ -34,7 +42,8 @@ describe('Auth Controller', () => {
                     email: 'test@example.com',
                     role: 'user'
                 },
-                token: 'mock_token'
+                accessToken: 'mock_access_token',
+                refreshToken: 'mock_refresh_token'
             };
 
             AuthService.signUp.mockResolvedValue([mockUser, null]);
@@ -44,13 +53,13 @@ describe('Auth Controller', () => {
                 .send({
                     fullName: 'Test User',
                     email: 'test@example.com',
-                    password: 'Password123'
+                    password: 'Password123!' // Added special character
                 })
                 .expect(201);
 
-            expect(response.body.message).toBe('success');
-            expect(response.body.data.email).toBe(mockUser.user.email);
-            expect(response.body.token).toBe(mockUser.token);
+            expect(response.body.status).toBe('success');
+            expect(response.body.data.user.email).toBe(mockUser.user.email);
+            expect(response.body.data.accessToken).toBe(mockUser.accessToken);
         });
 
         it('should return 412 if validation fails', async () => {
@@ -76,12 +85,12 @@ describe('Auth Controller', () => {
                 .send({
                     fullName: 'Existing User',
                     email: 'existing@example.com',
-                    password: 'Password123'
+                    password: 'Password123!' // Added special character
                 })
                 .expect(409);
 
-            expect(response.body.message).toBe('failed');
-            expect(response.body.error).toContain('User already exists');
+            expect(response.body.status).toBe('error');
+            expect(response.body.message).toContain('User already exists');
         });
     });
 
@@ -92,7 +101,8 @@ describe('Auth Controller', () => {
                     userId: 'user_123',
                     email: 'test@example.com'
                 },
-                token: 'mock_token'
+                accessToken: 'mock_access_token',
+                refreshToken: 'mock_refresh_token'
             };
 
             AuthService.signIn.mockResolvedValue([mockUser, null]);
@@ -101,12 +111,13 @@ describe('Auth Controller', () => {
                 .post('/api/v1/auth/login')
                 .send({
                     email: 'test@example.com',
-                    password: 'Password123'
+                    password: 'Password123!'
                 })
                 .expect(200);
 
-            expect(response.body.message).toBe('success');
-            expect(response.body.token).toBe(mockUser.token);
+            expect(response.body.status).toBe('success');
+            expect(response.body.message).toBe('Login successful');
+            expect(response.body.data.accessToken).toBe(mockUser.accessToken);
         });
 
         it('should return 401 for invalid credentials', async () => {
@@ -123,7 +134,103 @@ describe('Auth Controller', () => {
                 })
                 .expect(401);
 
-            expect(response.body.message).toBe('failed');
+            expect(response.body.status).toBe('error');
+            expect(response.body.message).toBe('Invalid password');
+        });
+    });
+
+    describe('POST /api/v1/auth/verify-otp', () => {
+        it('should verify OTP and return tokens', async () => {
+            const mockResult = {
+                user: { userId: 'user_123', email: 'test@example.com' },
+                accessToken: 'mock_access_token',
+                refreshToken: 'mock_refresh_token'
+            };
+
+            AuthService.verifyOTPAndLogin.mockResolvedValue([mockResult, null]);
+
+            const response = await request(app)
+                .post('/api/v1/auth/verify-otp')
+                .send({
+                    email: 'test@example.com',
+                    otp: '123456'
+                })
+                .expect(200);
+
+            expect(response.body.status).toBe('success');
+            expect(response.body.data.accessToken).toBeDefined();
+        });
+
+        it('should return 400 for invalid OTP', async () => {
+            AuthService.verifyOTPAndLogin.mockResolvedValue([
+                null,
+                { status: 400, message: 'Invalid OTP' }
+            ]);
+
+            const response = await request(app)
+                .post('/api/v1/auth/verify-otp')
+                .send({
+                    email: 'test@example.com',
+                    otp: '000000'
+                })
+                .expect(400);
+
+            expect(response.body.status).toBe('error');
+        });
+    });
+
+    describe('POST /api/v1/auth/refresh-token', () => {
+        it('should refresh access token', async () => {
+            const mockResult = {
+                accessToken: 'new_access_token',
+                user: { userId: 'user_123' }
+            };
+
+            AuthService.refreshAccessToken.mockResolvedValue([mockResult, null]);
+
+            const response = await request(app)
+                .post('/api/v1/auth/refresh-token')
+                .send({
+                    refreshToken: 'valid_refresh_token'
+                })
+                .expect(200);
+
+            expect(response.body.status).toBe('success');
+            expect(response.body.data.accessToken).toBe('new_access_token');
+        });
+
+        it('should return 401 for expired refresh token', async () => {
+            AuthService.refreshAccessToken.mockResolvedValue([
+                null,
+                { status: 401, message: 'Refresh token expired' }
+            ]);
+
+            const response = await request(app)
+                .post('/api/v1/auth/refresh-token')
+                .send({
+                    refreshToken: 'expired_token'
+                })
+                .expect(401);
+
+            expect(response.body.status).toBe('error');
+        });
+    });
+
+    describe('POST /api/v1/auth/forgot-password', () => {
+        it('should send password reset email', async () => {
+            AuthService.requestPasswordReset.mockResolvedValue([
+                { email: 'test@example.com', message: 'Password reset email sent' },
+                null
+            ]);
+
+            const response = await request(app)
+                .post('/api/v1/auth/forgot-password')
+                .send({
+                    email: 'test@example.com'
+                })
+                .expect(200);
+
+            expect(response.body.status).toBe('success');
         });
     });
 });

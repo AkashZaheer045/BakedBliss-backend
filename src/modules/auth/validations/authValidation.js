@@ -11,9 +11,13 @@ const validatePassword = password => {
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[\W_]/.test(password); // Special character check
     const isValidLength = password.length >= 8;
-    return isValidLength && hasUpperCase && hasLowerCase && hasNumber;
+    return isValidLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
 };
+
+const PASSWORD_ERROR_MESSAGE =
+    'Password must be at least 8 characters with uppercase, lowercase, number, and special character';
 
 const validatePhone = phone => /^\+?\d{10,15}$/.test(phone);
 
@@ -40,9 +44,7 @@ ValidationRules.rule = method => {
                     .notEmpty()
                     .withMessage('Password is required')
                     .custom(validatePassword)
-                    .withMessage(
-                        'Password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, and one number'
-                    ),
+                    .withMessage(PASSWORD_ERROR_MESSAGE),
 
                 body('phone')
                     .optional()
@@ -101,9 +103,7 @@ ValidationRules.rule = method => {
                     .notEmpty()
                     .withMessage('Password is required')
                     .custom(validatePassword)
-                    .withMessage(
-                        'Password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, and one number'
-                    ),
+                    .withMessage(PASSWORD_ERROR_MESSAGE),
 
                 body('confirmPassword')
                     .notEmpty()
@@ -125,9 +125,7 @@ ValidationRules.rule = method => {
                     .notEmpty()
                     .withMessage('New password is required')
                     .custom(validatePassword)
-                    .withMessage(
-                        'Password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, and one number'
-                    ),
+                    .withMessage(PASSWORD_ERROR_MESSAGE),
 
                 body('confirmPassword')
                     .notEmpty()

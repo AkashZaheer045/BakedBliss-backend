@@ -57,6 +57,4 @@ module.exports = function (models) {
             }
         });
     }
-
-    console.log('✅ Model hooks initialized');
 };

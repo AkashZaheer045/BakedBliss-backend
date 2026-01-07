@@ -15,6 +15,7 @@ const app = express();
 const { requestLogger } = require('./middleware/request_logger');
 const authMiddleware = require('./middleware/auth');
 const { errorHandler } = require('./middleware/response_handler');
+const { apiLimiter } = require('./middleware/rate_limiter');
 
 //------------------------------------//
 // CORS Configuration
@@ -32,6 +33,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //------------------------------------//
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/public', express.static(__dirname + '/public'));
+
+//------------------------------------//
+// Global Rate Limiting
+// 100 requests per 15 minutes per IP
+//------------------------------------//
+app.use(apiLimiter);
 
 //------------------------------------//
 // Console Logging with Timestamp
