@@ -6,7 +6,8 @@
 const sequelize = require('../db/sequelize/sequelize');
 const jwt = require('jsonwebtoken');
 
-const jwtSecretKey = process.env.JWT_SECRET_KEY || 'your-default-secret-key';
+// Support both JWT_SECRET_KEY and JWT_SECRET for compatibility
+const jwtSecretKey = process.env.JWT_SECRET_KEY || process.env.JWT_SECRET || 'your-default-secret-key';
 
 /**
  * Public paths that don't require authentication
@@ -103,13 +104,19 @@ module.exports = async function (req, res, next) {
     try {
         const decoded = jwt.verify(token, jwtSecretKey);
 
-        // Get user from database
+        // Debug: log decoded token
+        console.log('[Auth] Decoded token:', { uid: decoded.uid, id: decoded.id, user_id: decoded.user_id });
+
+        // Get user from database - token uses 'uid' field which contains user_id string
+        const userId = decoded.uid || decoded.id || decoded.user_id;
+
         const user = await sequelize.models.users.findOne({
-            where: { id: decoded.id || decoded.user_id },
+            where: { user_id: userId },
             attributes: { exclude: ['password', 'deleted_at'] }
         });
 
         if (!user) {
+            console.log('[Auth] User not found for userId:', userId);
             return res.status(401).json({
                 status: 'error',
                 statusCode: 401,
