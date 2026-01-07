@@ -1,165 +1,246 @@
-const { models, sequelize } = require('../../../../config/sequelizeConfig');
-const { Product } = models;
-const { Op } = require('sequelize');
+/**
+ * Product Controller
+ * Handles HTTP requests/responses, delegates business logic to ProductService
+ */
+const ProductService = require('../services/productService');
+const paginationHelper = require('../../../../helpers/pagination');
 
-// Search products by query with pagination
+// Search products
 const searchProducts = async (req, res) => {
-  try {
-    const { query, page = 1, limit = 10 } = req.query;
-
-    if (!query) {
-      return res.status(400).json({ status: 'error', message: 'Query parameter is required.' });
-    }
-
-    const offset = (page - 1) * Number(limit);
-
-    // Search by title first
-    let products = await Product.findAll({
-      where: {
-        title: {
-          [Op.like]: `%${query}%`
+    try {
+        const { query, limit } = req.query;
+        if (limit) {
+            req.query.per_page = limit;
         }
-      },
-      limit: Number(limit),
-      offset: offset
-    });
 
-    // If no products found by title, search by category
-    if (products.length === 0) {
-      products = await Product.findAll({
-        where: {
-          category: {
-            [Op.like]: `%${query}%`
-          }
-        },
-        limit: Number(limit),
-        offset: offset
-      });
+        if (!query) {
+            return res
+                .status(400)
+                .json({ status: 'error', message: 'Query parameter is required.' });
+        }
+
+        const queryOptions = {};
+        const _pagination = paginationHelper(req, queryOptions);
+
+        const [products, error] = await ProductService.searchProducts(query, queryOptions);
+
+        if (error) {
+            console.error('Error fetching products:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Server error' });
+        }
+
+        if (!products || products.length === 0) {
+            return res.status(404).json({ status: 'error', message: 'No products found.' });
+        }
+
+        res.status(200).json({ status: 'success', data: products });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ status: 'error', message: 'Server error', error: error.message });
     }
-
-    if (products.length === 0) {
-      return res.status(404).json({ status: 'error', message: 'No products found.' });
-    }
-
-    res.status(200).json({ status: 'success', data: products });
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ status: 'error', message: 'Server error' });
-  }
 };
 
-// Controller to get a product by its ID
+// Get product by ID
 const getProductById = async (req, res) => {
-  const { product_id } = req.params;
-  try {
-    const product = await Product.findByPk(product_id);
+    try {
+        const { product_id } = req.params;
 
-    if (!product) {
-      return res.status(404).json({ status: 'error', message: 'Product not found' });
+        const [product, error] = await ProductService.getProductById(product_id);
+
+        if (error) {
+            console.error('Error fetching product:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Internal server error' });
+        }
+
+        res.status(200).json({ status: 'success', data: product });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+            error: error.message
+        });
     }
-
-    return res.status(200).json({ status: 'success', data: product });
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
-  }
 };
 
-// Get products by category with pagination
+// Get products by category
 const getProductsByCategory = async (req, res) => {
-  const categoryName = req.params.category_name;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const offset = (page - 1) * limit;
+    try {
+        const categoryName = req.params.category_name;
+        const { limit } = req.query;
+        if (limit) {
+            req.query.per_page = limit;
+        }
 
-  try {
-    const { count, rows: products } = await Product.findAndCountAll({
-      where: { category: categoryName },
-      offset: offset,
-      limit: limit
-    });
+        const queryOptions = {};
+        const pagination = paginationHelper(req, queryOptions);
 
-    if (products.length === 0) {
-      return res.status(404).json({ status: 'error', message: 'No products found in this category' });
+        const [result, error] = await ProductService.getProductsByCategory(
+            categoryName,
+            queryOptions
+        );
+
+        if (error) {
+            console.error('Error fetching products by category:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Error fetching products' });
+        }
+
+        if (result.products.length === 0) {
+            return res
+                .status(404)
+                .json({ status: 'error', message: 'No products found in this category' });
+        }
+
+        pagination.setCount(result.pagination.total);
+
+        res.status(200).json({
+            status: 'success',
+            data: result.products,
+            pagination: {
+                total: result.pagination.total,
+                page: pagination.page + 1,
+                pages: pagination.pages,
+                limit: pagination.per_page
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching products by category:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error fetching products',
+            error: error.message
+        });
     }
-
-    res.status(200).json({
-      status: 'success',
-      data: products,
-      pagination: { total: count, page, limit }
-    });
-  } catch (error) {
-    console.error('Error fetching products by category:', error);
-    res.status(500).json({ status: 'error', message: 'Error fetching products', error: error.message });
-  }
 };
 
-// List products with pagination and filters
+// List products with filters
 const listProducts = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12;
-    const category = req.query.category;
-    const featured = req.query.featured === 'true';
-    const offers = req.query.offers === 'true';
-    const sort = req.query.sort || 'createdAt';
-    const search = req.query.search;
+    try {
+        const { page: _page, limit, category, featured, offers, sort, search } = req.query;
+        if (limit) {
+            req.query.per_page = limit;
+        }
 
-    // Build where clause
-    const where = {};
-    if (category) where.category = category;
-    if (req.query.featured !== undefined) where.isFeatured = featured;
-    if (req.query.offers !== undefined) where.onOffer = offers;
-    if (search) where.title = { [Op.like]: `%${search}%` };
+        // Map custom sort to helper format
+        if (sort) {
+            if (sort === 'price_asc') {
+                req.query.sort_by = 'price';
+                req.query.sort_order = 'ASC';
+            } else if (sort === 'price_desc') {
+                req.query.sort_by = 'price';
+                req.query.sort_order = 'DESC';
+            } else if (sort === 'rating') {
+                req.query.sort_by = 'rating';
+                req.query.sort_order = 'DESC';
+            } else {
+                req.query.sort_by = 'created_at';
+                req.query.sort_order = 'DESC';
+            }
+        } else {
+            // Default
+            req.query.sort_by = 'created_at';
+            req.query.sort_order = 'DESC';
+        }
 
-    // Build order clause
-    let order = [];
-    if (sort === 'price_asc') order = [['price', 'ASC']];
-    else if (sort === 'price_desc') order = [['price', 'DESC']];
-    else if (sort === 'rating') order = [['rating', 'DESC']];
-    else order = [['created_at', 'DESC']];
+        const queryOptions = {};
+        const pagination = paginationHelper(req, queryOptions);
 
-    const offset = (page - 1) * limit;
+        const [result, error] = await ProductService.listProducts({
+            category,
+            featured: featured === 'true',
+            offers: offers === 'true',
+            search,
+            options: queryOptions
+        });
 
-    const { count, rows: products } = await Product.findAndCountAll({
-      where,
-      order,
-      limit,
-      offset
-    });
+        if (error) {
+            console.error('Error listing products:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Failed to list products' });
+        }
 
-    res.status(200).json({
-      status: 'success',
-      data: products,
-      pagination: { total: count, page, limit }
-    });
-  } catch (error) {
-    console.error('Error listing products:', error);
-    res.status(500).json({ status: 'error', message: 'Failed to list products', error: error.message });
-  }
+        pagination.setCount(result.pagination.total);
+
+        res.status(200).json({
+            status: 'success',
+            data: result.products,
+            pagination: {
+                total: result.pagination.total,
+                page: pagination.page + 1,
+                pages: pagination.pages,
+                limit: pagination.per_page
+            }
+        });
+    } catch (error) {
+        console.error('Error listing products:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to list products',
+            error: error.message
+        });
+    }
 };
 
-// Get product categories and counts
+// Get categories
 const getCategories = async (req, res) => {
-  try {
-    const results = await Product.findAll({
-      attributes: [
-        'category',
-        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
-      ],
-      group: ['category']
-    });
+    try {
+        const [categories, error] = await ProductService.getCategories();
 
-    const categories = results.map(result => ({
-      name: result.category || 'uncategorized',
-      count: parseInt(result.dataValues.count)
-    }));
+        if (error) {
+            console.error('Error fetching categories:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Failed to fetch categories' });
+        }
 
-    res.status(200).json({ status: 'success', data: categories });
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).json({ status: 'error', message: 'Failed to fetch categories', error: error.message });
-  }
+        res.status(200).json({ status: 'success', data: categories });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch categories',
+            error: error.message
+        });
+    }
 };
 
-module.exports = { searchProducts, getProductById, getProductsByCategory, listProducts, getCategories };
+// Delete product
+const deleteProduct = async (req, res) => {
+    try {
+        const { product_id } = req.params;
+
+        const [_success, error] = await ProductService.deleteProduct(product_id);
+
+        if (error) {
+            console.error('Delete product error:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Failed to delete product' });
+        }
+
+        res.status(200).json({ status: 'success', message: 'Product deleted successfully' });
+    } catch (error) {
+        console.error('Delete product error:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to delete product',
+            error: error.message
+        });
+    }
+};
+
+module.exports = {
+    searchProducts,
+    getProductById,
+    getProductsByCategory,
+    listProducts,
+    getCategories,
+    deleteProduct
+};

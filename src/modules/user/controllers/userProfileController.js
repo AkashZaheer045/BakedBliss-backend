@@ -1,34 +1,67 @@
-const { models } = require('../../../../config/sequelizeConfig');
-const { User } = models;
+/**
+ * User Profile Controller
+ * Handles HTTP requests/responses, delegates business logic to UserService
+ */
+const UserService = require('../services/userService');
 
-// Get user profile function
+// Get user profile
 const getUserProfile = async (req, res) => {
-  try {
-    const userId = req.params.user_id; // Get user ID from request parameters
+    try {
+        const userId = req.params.user_id;
 
-    // Retrieve user data from database
-    const user = await User.findOne({
-      where: { user_id: userId }
-    });
+        const [profile, error] = await UserService.getUserProfile(userId);
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
+        if (error) {
+            console.error('Error retrieving user profile:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'An error occurred while retrieving the user profile.'
+            });
+        }
+
+        res.status(200).json({ status: 'success', data: profile });
+    } catch (error) {
+        console.error('Error retrieving user profile:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while retrieving the user profile.'
+        });
     }
-
-    // Construct response
-    const responseData = {
-      userId: user.user_id,
-      fullName: user.full_name,
-      email: user.email,
-      phoneNo: user.phone_number,
-      imageUrl: user.profile_picture,
-    };
-
-    res.status(200).json({ status: "success", data: responseData });
-  } catch (error) {
-    console.error("Error retrieving user profile:", error);
-    res.status(500).json({ error: "An error occurred while retrieving the user profile." });
-  }
 };
 
-module.exports = { getUserProfile };
+// Update user profile
+const updateUserProfile = async (req, res) => {
+    try {
+        const userId = req.params.user_id;
+        const { fullName, phoneNumber, profilePicture } = req.body;
+
+        // Ensure authenticated user matches path user
+        if (!req.user || req.user.uid !== userId) {
+            return res.status(403).json({ status: 'error', message: 'Forbidden' });
+        }
+
+        const [profile, error] = await UserService.updateUserProfile(userId, {
+            fullName,
+            phoneNumber,
+            profilePicture
+        });
+
+        if (error) {
+            console.error('Error updating user profile:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'An error occurred while updating the user profile.'
+            });
+        }
+
+        res.status(200).json({ status: 'success', message: 'Profile updated', data: profile });
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'An error occurred while updating the user profile.'
+        });
+    }
+};
+
+module.exports = { getUserProfile, updateUserProfile };

@@ -74,7 +74,6 @@ async function createAdminUser() {
         console.log('⚠️  IMPORTANT: Change this password after first login!\n');
         console.log('You can now login at: http://localhost:5173');
         console.log('Select "Admin" role and use the credentials above.\n');
-
     } catch (error) {
         console.error('❌ Error creating admin user:', error.message);
         console.error(error);

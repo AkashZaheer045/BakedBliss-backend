@@ -1,8 +1,8 @@
-const express = require("express");
+const express = require('express');
 
-let routes = function () {
+const routes = function () {
     const router = express.Router();
-    router.use("/", require("./routes/adminRoutes")());
+    router.use('/', require('./routes/adminRoutes')());
     return router;
 };
 

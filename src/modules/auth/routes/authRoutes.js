@@ -1,22 +1,55 @@
+/**
+ * Auth Routes
+ * Per QAutos pattern:
+ * - No route-level authentication (handled centrally in app.js)
+ * - Validation rules via ValidationRules.rule('methodName')
+ * - Centralized Validation.validate middleware
+ */
 const express = require('express');
+const authRules = require('../validations/authValidation');
+const Validation = require('../../../../utils/validation');
+
+// Controllers
 const { signUpUser, signInUser, socialLogin } = require('../controllers/authController');
 const { getUserProfile } = require('../../user/controllers/userProfileController');
-const authenticateToken = require('../../../../middleware/authMiddleware.js');
 
-let routes = function () {
+const routes = function () {
     const router = express.Router({ mergeParams: true });
 
-    // Route for sign-up
-    router.post('/users/register', signUpUser);
+    //------------------------------------//
+    // PUBLIC ROUTES (defined in auth.js allowedPaths)
+    //------------------------------------//
 
-    // Route for sign-in
-    router.post('/users/signin', signInUser);
+    // Sign-up / Register
+    router.route('/register').post(authRules.rule('register'), Validation.validate, signUpUser);
 
-    // Route for social login (Facebook, Google, etc.)
-    router.post('/users/social-login', socialLogin);
+    router.route('/signup').post(authRules.rule('signup'), Validation.validate, signUpUser);
 
-    // Route for getting user profile (protected)
-    router.get('/users/profile/:user_id', authenticateToken, getUserProfile);
+    // Sign-in / Login
+    router.route('/login').post(authRules.rule('login'), Validation.validate, signInUser);
+
+    // Social login (Google, Facebook, etc.)
+    router
+        .route('/google-login')
+        .post(authRules.rule('googleLogin'), Validation.validate, socialLogin);
+
+    router.route('/social-login').post(socialLogin);
+
+    // Password reset flow
+    router
+        .route('/forgot-password')
+        .post(authRules.rule('forgotPassword'), Validation.validate, signInUser); // Replace with actual forgot password controller
+
+    router
+        .route('/reset-password')
+        .post(authRules.rule('resetPassword'), Validation.validate, signInUser); // Replace with actual reset password controller
+
+    //------------------------------------//
+    // PROTECTED ROUTES (auth handled centrally)
+    //------------------------------------//
+
+    // Get user profile (legacy route - maintained for compatibility)
+    router.route('/users/profile/:user_id').get(getUserProfile);
 
     return router;
 };

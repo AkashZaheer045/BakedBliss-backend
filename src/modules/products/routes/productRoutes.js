@@ -1,54 +1,69 @@
+/**
+ * Product Routes
+ * Per QAutos pattern:
+ * - No route-level authentication (handled centrally in app.js)
+ * - Validation rules via ValidationRules.rule('methodName')
+ * - Centralized Validation.validate middleware
+ */
 const express = require('express');
-const { createProduct } = require('../controllers/productUploadController');
-const { searchProducts, getProductById, getProductsByCategory, listProducts, getCategories } = require('../controllers/productController');
-const { getTrendingProducts, getRecommendations } = require('../controllers/trendingProductsController');
-const authenticateToken = require('../../../../middleware/authMiddleware.js');
+const productRules = require('../validations/productValidation');
+const Validation = require('../../../../utils/validation');
 
-let routes = function () {
+// Controllers
+const {
+    searchProducts,
+    getProductById,
+    getProductsByCategory,
+    listProducts,
+    getCategories,
+    deleteProduct
+} = require('../controllers/productController');
+const { createProduct, updateProduct } = require('../controllers/productUploadController');
+const {
+    getTrendingProducts,
+    getRecommendations
+} = require('../controllers/trendingProductsController');
+
+const routes = function () {
     const router = express.Router({ mergeParams: true });
 
-    // Router for searching products
-    router.get('/search', searchProducts);
+    //------------------------------------//
+    // PUBLIC ROUTES (defined in auth.js allowedPaths)
+    //------------------------------------//
 
     // List products (paginated / filtered)
-    router.get('/', listProducts);
+    router.route('/').get(productRules.rule('list'), Validation.validate, listProducts);
 
-    router.post('/upload', createProduct);
+    // Search products
+    router.route('/search').get(productRules.rule('search'), Validation.validate, searchProducts);
 
-    // Router for trending products
-    router.get('/trending', getTrendingProducts);
+    // Get categories
+    router.route('/categories').get(getCategories);
 
-    // Recommendations (user-specific)
-    router.get('/recommendations/:userId', authenticateToken, getRecommendations);
+    // Trending products
+    router.route('/trending').get(getTrendingProducts);
 
-    // Categories metadata
-    router.get('/categories', getCategories);
+    // Get products by category
+    router
+        .route('/category/:category_name')
+        .get(productRules.rule('getByCategory'), Validation.validate, getProductsByCategory);
 
-    router.get('/category/:category_name', getProductsByCategory);
+    //------------------------------------//
+    // PROTECTED ROUTES (auth handled centrally)
+    //------------------------------------//
 
-    // Admin routes - Update and Delete products
-    router.put('/:product_id', authenticateToken, createProduct); // Reusing createProduct for update
-    router.delete('/:product_id', authenticateToken, async (req, res) => {
-        try {
-            const { product_id } = req.params;
-            const product = await require('../../../../db/sequelize/sequelize').models.products.findOne({
-                where: { id: product_id }
-            });
+    // Upload new product (admin only - role check can be added as middleware)
+    router.route('/upload').post(productRules.rule('create'), Validation.validate, createProduct);
 
-            if (!product) {
-                return res.status(404).json({ success: false, message: 'Product not found' });
-            }
+    // User-specific recommendations
+    router.route('/recommendations/:userId').get(getRecommendations);
 
-            await product.destroy();
-            return res.json({ success: true, message: 'Product deleted successfully' });
-        } catch (error) {
-            console.error('Delete product error:', error);
-            return res.status(500).json({ success: false, message: 'Failed to delete product' });
-        }
-    });
-
-    // Router to get product by ID (Must be last)
-    router.get('/:product_id', getProductById);
+    // Update product
+    router
+        .route('/:product_id')
+        .get(productRules.rule('getById'), Validation.validate, getProductById)
+        .put(productRules.rule('update'), Validation.validate, updateProduct)
+        .delete(productRules.rule('delete'), Validation.validate, deleteProduct);
 
     return router;
 };

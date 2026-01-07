@@ -1,4 +1,13 @@
 {
+  "development": {
+    "username": "akash",
+    "password": "akash123",
+    "database": "baked_bliss_dev",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql",
+    "logging": false
+  },
   "localhost": {
     "name": "baked_bliss_dev",
     "user": "akash",
@@ -10,7 +19,57 @@
     "charset": "utf8mb4",
     "logging": false,
     "pool": {
-      "min": 0, 
+      "min": 0,
+      "max": 10,
+      "idle": 30000,
+      "evict": 2000,
+      "acquire": 60000,
+      "handleDisconnects": true
+    },
+    "dialectOptions": {
+      "charset": "utf8mb4"
+    },
+    "omitNull": true,
+    "benchmark": true,
+    "define": {
+      "paranoid": true,
+      "timestamp": true,
+      "subQuery": false,
+      "underscored": false,
+      "duplicating": false,
+      "underscoredAll": true,
+      "createdAt": "created_at",
+      "updatedAt": "updated_at",
+      "deletedAt": "deleted_at",
+      "defaultScope": {
+        "omitNull": true,
+        "benchmark": true,
+        "paranoid": false,
+        "subQuery": false,
+        "duplicating": false,
+        "where": {
+          "deleted_at": null
+        },
+        "attributes": {
+          "exclude": [
+            "deleted_at"
+          ]
+        }
+      }
+    }
+  },
+  "test": {
+    "name": "baked_bliss_test",
+    "user": "akash",
+    "pass": "akash123",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "dialect": "mysql",
+    "showErrors": true,
+    "charset": "utf8mb4",
+    "logging": false,
+    "pool": {
+      "min": 0,
       "max": 10,
       "idle": 30000,
       "evict": 2000,

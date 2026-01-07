@@ -4,6 +4,7 @@
 const successResponse = (res, message = 'Success', data = null, statusCode = 200) => {
     const response = {
         success: true,
+        status: 'success',
         message
     };
 
@@ -20,6 +21,7 @@ const successResponse = (res, message = 'Success', data = null, statusCode = 200
 const errorResponse = (res, message = 'An error occurred', statusCode = 500, errors = null) => {
     const response = {
         success: false,
+        status: 'error',
         message
     };
 
@@ -36,6 +38,7 @@ const errorResponse = (res, message = 'An error occurred', statusCode = 500, err
 const validationErrorResponse = (res, errors) => {
     return res.status(400).json({
         success: false,
+        status: 'error',
         message: 'Validation error',
         errors
     });
@@ -47,6 +50,7 @@ const validationErrorResponse = (res, errors) => {
 const notFoundResponse = (res, message = 'Resource not found') => {
     return res.status(404).json({
         success: false,
+        status: 'error',
         message
     });
 };
@@ -57,6 +61,7 @@ const notFoundResponse = (res, message = 'Resource not found') => {
 const unauthorizedResponse = (res, message = 'Unauthorized access') => {
     return res.status(401).json({
         success: false,
+        status: 'error',
         message
     });
 };
@@ -67,6 +72,7 @@ const unauthorizedResponse = (res, message = 'Unauthorized access') => {
 const forbiddenResponse = (res, message = 'Access forbidden') => {
     return res.status(403).json({
         success: false,
+        status: 'error',
         message
     });
 };

@@ -4,10 +4,10 @@ const {
     getRevenueAnalytics,
     getProductAnalytics
 } = require('../controllers/adminDashboardController');
-const authenticateToken = require('../../../../middleware/authMiddleware.js');
-const { isAdmin } = require('../../../../middleware/roleMiddleware.js');
+const authenticateToken = require('../../../../middleware/auth_middleware.js');
+const { isAdmin } = require('../../../../middleware/role_middleware.js');
 
-let routes = function () {
+const routes = function () {
     const router = express.Router({ mergeParams: true });
 
     // All admin routes require authentication and admin role

@@ -1,28 +1,46 @@
+/**
+ * Address Routes
+ * Per QAutos pattern:
+ * - No route-level authentication (handled centrally in app.js)
+ * - Validation rules via ValidationRules.rule('methodName')
+ * - Centralized Validation.validate middleware
+ * - Clean routes: Only reference controllers, no inline logic
+ */
 const express = require('express');
-const authenticateToken = require('../../../../middleware/authMiddleware');
+const addressRules = require('../validations/addressValidation');
+const Validation = require('../../../../utils/validation');
+
+// Controllers
 const {
-  addAddress,
-  updateAddress,
-  deleteAddress,
-  viewAddresses
+    addAddress,
+    updateAddress,
+    deleteAddress,
+    viewAddresses
 } = require('../controllers/addressController');
 
-let routes = function () {
-  const router = express.Router({ mergeParams: true });
+const routes = function () {
+    const router = express.Router({ mergeParams: true });
 
-  // Add a new address
-  router.post('/add', authenticateToken, addAddress);
+    //------------------------------------//
+    // ALL ADDRESS ROUTES ARE PROTECTED (auth handled centrally)
+    //------------------------------------//
 
-  // Update an existing address
-  router.put('/update', authenticateToken, updateAddress);
+    // Add a new address
+    router.route('/add').post(addressRules.rule('add'), Validation.validate, addAddress);
 
-  // Delete an address
-  router.delete('/delete', authenticateToken, deleteAddress);
+    // Update an existing address
+    router.route('/update').put(addressRules.rule('update'), Validation.validate, updateAddress);
 
-  // View all addresses
-  router.get('/view', authenticateToken, viewAddresses);
+    // Delete an address
+    router.route('/delete').delete(addressRules.rule('delete'), Validation.validate, deleteAddress);
 
-  return router;
+    // View all addresses
+    router.route('/list').get(addressRules.rule('list'), Validation.validate, viewAddresses);
+
+    // Alias for backward compatibility
+    router.route('/view').get(addressRules.rule('list'), Validation.validate, viewAddresses);
+
+    return router;
 };
 
 module.exports = routes;

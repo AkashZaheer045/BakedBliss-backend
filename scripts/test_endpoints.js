@@ -32,7 +32,7 @@ async function runTest(name, method, endpoint, body = null, requireAuth = false)
     try {
         const options = {
             method,
-            headers,
+            headers
         };
 
         if (body) {
@@ -50,7 +50,9 @@ async function runTest(name, method, endpoint, body = null, requireAuth = false)
             endpoint: `${method} ${endpoint}`,
             status: success ? '✅ PASS' : '❌ FAIL',
             statusCode: status,
-            response: JSON.stringify(data).substring(0, 100) + (JSON.stringify(data).length > 100 ? '...' : '')
+            response:
+                JSON.stringify(data).substring(0, 100) +
+                (JSON.stringify(data).length > 100 ? '...' : '')
         });
 
         return { success, data, status };
@@ -73,7 +75,7 @@ async function main() {
     await runTest('Health Check', 'GET', '/health');
 
     // 2. Auth - Register
-    const registerRes = await runTest('Register User', 'POST', '/api/v1/auth/users/register', {
+    const _registerRes = await runTest('Register User', 'POST', '/api/v1/auth/users/register', {
         email: TEST_USER.email,
         password: TEST_USER.password,
         fullName: TEST_USER.fullName,
@@ -124,24 +126,36 @@ async function main() {
 
     if (authToken) {
         // 8. Cart - Add
-        await runTest('Add to Cart', 'POST', '/api/v1/cart/add', {
-            productId: testProductId,
-            quantity: 1
-        }, true);
+        await runTest(
+            'Add to Cart',
+            'POST',
+            '/api/v1/cart/add',
+            {
+                productId: testProductId,
+                quantity: 1
+            },
+            true
+        );
 
         // 9. Cart - View
         await runTest('View Cart', 'GET', '/api/v1/cart/view', null, true);
 
         // 10. Address - Add (Fixed payload)
-        await runTest('Add Address', 'POST', '/api/v1/address/add', {
-            address: {
-                street: '123 Test St',
-                city: 'Test City',
-                state: 'TS',
-                zipCode: '12345',
-                country: 'Testland'
-            }
-        }, true);
+        await runTest(
+            'Add Address',
+            'POST',
+            '/api/v1/address/add',
+            {
+                address: {
+                    street: '123 Test St',
+                    city: 'Test City',
+                    state: 'TS',
+                    zipCode: '12345',
+                    country: 'Testland'
+                }
+            },
+            true
+        );
 
         // 11. Address - View
         await runTest('View Addresses', 'GET', '/api/v1/address/view', null, true);

@@ -1,14 +1,39 @@
+/**
+ * User Routes
+ * Per QAutos pattern:
+ * - No route-level authentication (handled centrally in app.js)
+ * - Validation rules via ValidationRules.rule('methodName')
+ * - Centralized Validation.validate middleware
+ * - Clean routes: Only reference controllers, no inline logic
+ */
 const express = require('express');
-const authenticateToken = require('../../../../middleware/authMiddleware');
-const { addFavorite, removeFavorite, listFavorites } = require('../controllers/favoritesController');
+const userRules = require('../validations/userValidation');
+const Validation = require('../../../../utils/validation');
 
-let routes = function () {
+// Controllers
+const {
+    addFavorite,
+    removeFavorite,
+    listFavorites
+} = require('../controllers/favoritesController');
+
+const routes = function () {
     const router = express.Router({ mergeParams: true });
 
-    // Favorites
-    router.post('/:user_id/favorites', authenticateToken, addFavorite);
-    router.delete('/:user_id/favorites/:product_id', authenticateToken, removeFavorite);
-    router.get('/:user_id/favorites', authenticateToken, listFavorites);
+    //------------------------------------//
+    // FAVORITES ROUTES (auth handled centrally)
+    //------------------------------------//
+
+    // Add to favorites
+    router
+        .route('/:user_id/favorites')
+        .post(userRules.rule('addFavorite'), Validation.validate, addFavorite)
+        .get(userRules.rule('listFavorites'), Validation.validate, listFavorites);
+
+    // Remove from favorites
+    router
+        .route('/:user_id/favorites/:product_id')
+        .delete(userRules.rule('removeFavorite'), Validation.validate, removeFavorite);
 
     return router;
 };

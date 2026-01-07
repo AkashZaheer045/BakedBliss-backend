@@ -1,107 +1,231 @@
-const { models } = require('../../../../config/sequelizeConfig');
-const { Order } = models;
-const crypto = require('crypto');
+/**
+ * Order Controller
+ * Handles HTTP requests/responses, delegates business logic to OrderService
+ */
+const OrderService = require('../services/orderService');
 
 // Confirm and place an order
 const confirmOrder = async (req, res) => {
-  try {
-    const userId = req.user.uid;
-    const { cartItems, deliveryAddress, totalAmount } = req.body;
+    try {
+        const userId = req.user.uid;
+        const { cartItems, deliveryAddress, totalAmount } = req.body;
 
-    // Generate unique order ID
-    const timestamp = Date.now().toString();
-    const randomPart = Math.random().toString(36).substring(2, 8);
-    const orderId = `order_${timestamp}_${randomPart}`;
+        if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+            return res.status(400).json({ status: 'error', message: 'Cart items are required' });
+        }
 
-    const newOrder = await Order.create({
-      order_id: orderId,
-      user_id: userId,
-      cart_items: cartItems,
-      delivery_address: deliveryAddress,
-      total_amount: totalAmount,
-      status: 'Pending'
-    });
+        const [order, error] = await OrderService.createOrder(
+            userId,
+            cartItems,
+            deliveryAddress,
+            totalAmount
+        );
 
-    res.status(200).json({ 
-      message: "Order placed successfully", 
-      orderId: newOrder.order_id,
-      order: {
-        orderId: newOrder.order_id,
-        userId: newOrder.user_id,
-        cartItems: newOrder.cart_items,
-        deliveryAddress: newOrder.delivery_address,
-        totalAmount: newOrder.total_amount,
-        status: newOrder.status,
-        createdAt: newOrder.created_at
-      }
-    });
-  } catch (error) {
-    console.error("Error confirming order:", error);
-    res.status(500).json({ message: "Failed to place order", error: error.message });
-  }
+        if (error) {
+            console.error('Error confirming order:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'Failed to place order'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Order placed successfully',
+            orderId: order.orderId,
+            order
+        });
+    } catch (error) {
+        console.error('Error confirming order:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to place order',
+            error: error.message
+        });
+    }
 };
 
 // View order history
 const viewOrderHistory = async (req, res) => {
-  try {
-    const userId = req.user.uid;
+    try {
+        const userId = req.user.uid;
 
-    const orders = await Order.findAll({
-      where: { user_id: userId },
-      order: [['created_at', 'DESC']]
-    });
+        const [orders, error] = await OrderService.getOrderHistory(userId);
 
-    const ordersData = orders.map(order => ({
-      orderId: order.order_id,
-      userId: order.user_id,
-      cartItems: order.cart_items,
-      deliveryAddress: order.delivery_address,
-      totalAmount: order.total_amount,
-      status: order.status,
-      createdAt: order.created_at
-    }));
+        if (error) {
+            console.error('Error retrieving order history:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'Failed to retrieve order history'
+            });
+        }
 
-    res.status(200).json({ message: "Order history retrieved", orders: ordersData });
-  } catch (error) {
-    console.error("Error retrieving order history:", error);
-    res.status(500).json({ message: "Failed to retrieve order history", error: error.message });
-  }
+        res.status(200).json({ status: 'success', message: 'Order history retrieved', orders });
+    } catch (error) {
+        console.error('Error retrieving order history:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve order history',
+            error: error.message
+        });
+    }
 };
 
 // Track order status
 const getOrderStatus = async (req, res) => {
-  try {
-    const { orderId } = req.params;
+    try {
+        const { orderId } = req.params;
 
-    const order = await Order.findOne({
-      where: { order_id: orderId }
-    });
+        const [order, error] = await OrderService.getOrderById(orderId);
 
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+        if (error) {
+            console.error('Error retrieving order status:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'Failed to retrieve order status'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Order status retrieved',
+            orderStatus: order.status,
+            order
+        });
+    } catch (error) {
+        console.error('Error retrieving order status:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve order status',
+            error: error.message
+        });
     }
+};
 
-    res.status(200).json({ 
-      message: "Order status retrieved", 
-      status: order.status,
-      order: {
-        orderId: order.order_id,
-        userId: order.user_id,
-        cartItems: order.cart_items,
-        deliveryAddress: order.delivery_address,
-        totalAmount: order.total_amount,
-        status: order.status,
-        createdAt: order.created_at
-      }
-    });
-  } catch (error) {
-    console.error("Error retrieving order status:", error);
-    res.status(500).json({ message: "Failed to retrieve order status", error: error.message });
-  }
+// Get all orders (admin)
+const getAllOrders = async (req, res) => {
+    try {
+        const { status, page, limit } = req.query;
+
+        const [result, error] = await OrderService.getAllOrders({ status, page, limit });
+
+        if (error) {
+            console.error('Error getting all orders:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'Failed to get orders'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error getting all orders:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to get orders',
+            error: error.message
+        });
+    }
+};
+
+// Update order status (admin)
+const updateOrderStatus = async (req, res) => {
+    try {
+        const { order_id, status } = req.body;
+
+        const [result, error] = await OrderService.updateOrderStatus(order_id, status);
+
+        if (error) {
+            console.error('Error updating order status:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'Failed to update order'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Order status updated',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to update order',
+            error: error.message
+        });
+    }
+};
+
+// Cancel order
+const cancelOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { reason } = req.body;
+
+        const [result, error] = await OrderService.cancelOrder(orderId, reason);
+
+        if (error) {
+            console.error('Error cancelling order:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                statusCode: error.status || 500,
+                message: error.message || 'Failed to cancel order'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Order cancelled successfully',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to cancel order',
+            error: error.message
+        });
+    }
+};
+
+// Get order stats (admin)
+const getOrderStats = async (req, res) => {
+    try {
+        const [stats, error] = await OrderService.getOrderStats();
+
+        if (error) {
+            console.error('Error getting order stats:', error);
+            return res.status(error.status || 500).json({
+                status: 'error',
+                message: error.message || 'Failed to get order stats'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: stats
+        });
+    } catch (error) {
+        console.error('Error getting order stats:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to get order stats',
+            error: error.message
+        });
+    }
 };
 
 module.exports = {
-  confirmOrder,
-  viewOrderHistory,
-  getOrderStatus,
+    confirmOrder,
+    viewOrderHistory,
+    getOrderStatus,
+    getAllOrders,
+    updateOrderStatus,
+    cancelOrder,
+    getOrderStats
 };

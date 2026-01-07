@@ -1,7 +1,10 @@
-const { models } = require('../../../../config/sequelizeConfig');
-const { Product } = models;
+/**
+ * Product Upload Controller
+ * Handles HTTP requests/responses for product creation/update
+ */
+const ProductService = require('../services/productService');
 
-// Function to create a new product
+// Create product
 const createProduct = async (req, res) => {
     try {
         const {
@@ -15,22 +18,20 @@ const createProduct = async (req, res) => {
             description,
             tagline,
             images,
-            stock,
+            stock
         } = req.body;
 
-        // Check if all required fields are provided
         if (!title || !price || !category || stock === undefined) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Title, price, category, and stock are required.',
+                message: 'Title, price, category, and stock are required.'
             });
         }
 
-        // Create a new product
-        const newProduct = await Product.create({
+        const [newProduct, error] = await ProductService.createProduct({
             title,
             price,
-            sale_price: salePrice,
+            salePrice,
             thumbnail,
             rating,
             category,
@@ -41,7 +42,14 @@ const createProduct = async (req, res) => {
             stock
         });
 
-        return res.status(201).json({
+        if (error) {
+            console.error('Error creating product:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Internal Server Error' });
+        }
+
+        res.status(201).json({
             status: 'success',
             message: 'Product created successfully.',
             data: {
@@ -58,15 +66,69 @@ const createProduct = async (req, res) => {
                 images: newProduct.images,
                 stock: newProduct.stock,
                 createdAt: newProduct.created_at
-            },
+            }
         });
     } catch (error) {
         console.error('Error creating product:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Internal Server Error.',
-        });
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     }
 };
 
-module.exports = { createProduct };
+// Update product
+const updateProduct = async (req, res) => {
+    try {
+        const { product_id } = req.params;
+        const {
+            title,
+            price,
+            salePrice,
+            thumbnail,
+            rating,
+            category,
+            ingredients,
+            description,
+            tagline,
+            images,
+            stock
+        } = req.body;
+
+        const [product, error] = await ProductService.updateProduct(product_id, {
+            title,
+            price,
+            salePrice,
+            thumbnail,
+            rating,
+            category,
+            ingredients,
+            description,
+            tagline,
+            images,
+            stock
+        });
+
+        if (error) {
+            console.error('Error updating product:', error);
+            return res
+                .status(error.status || 500)
+                .json({ status: 'error', message: error.message || 'Internal Server Error' });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Product updated successfully.',
+            data: {
+                productId: product.id,
+                title: product.title,
+                price: product.price,
+                salePrice: product.sale_price,
+                category: product.category,
+                stock: product.stock
+            }
+        });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+    }
+};
+
+module.exports = { createProduct, updateProduct };

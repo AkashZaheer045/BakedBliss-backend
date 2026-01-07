@@ -1,57 +1,157 @@
-let handle = require("./../utils/promise_handler");
-const omitAsNull = function(value, options){return (options && options.omitNull === true && value === null);};
-module.exports = function(model){
-    this.model = model;
-    this.find = async function(id){return await handle(this.model.findByPk(id));};
-    this.findOne = async function(query){return await handle(this.model.findOne(query));};
-    this.findAll = async function(query){return await handle(this.model.findAll(query));};
-    this.findByPk = async function(query){return await handle(this.model.findByPk(query));};
-    this.fetchOne = async function(where){return await handle(this.model.findOne({where: where}));};
-    this.fetchAll = async function(where){return await handle(this.model.findAll({where: where}));};
-    this.query = async function(query, options){return await handle(this.model.query(query, options || {}));};
-    this.build = function(values, options){return this.model.build(values, options);};
-    this.count = async function(query){return await handle(this.model.count(query));};
-    this.sum = async function(query){return await handle(this.model.sum(query));};
-    this.save = async function(options){return await handle(this.model.save(options));};
-    this.destroy = async function(options){return await handle(this.model.destroy(options));};
-    this.updateAll = async function(values, options){return await handle(this.model.update(values, options));};
-    this.validate = async function(options){return await handle(this.model.validate(options));};
-    this.create = async function(values, options){return await handle(this.model.create(values, options));};
-    this.update = async function(values, options){
-        let changed = [];
-        let new_values = {};
-        options = options || {omitNull: true};
-        let dataValues = this.model.toJSON();
-        if(values && Object.keys(values).length > 0){
-            let attributes = this.model._options.attributes || [];
-            for(let key in values){
-                if(attributes.includes(key) && String(values[key]) !== String(dataValues[key]) && !omitAsNull(values[key], options)){
+/**
+ * Database Instance Helper
+ * Repository layer with utility methods for database operations
+ * Usage: const userInstance = new sequelize.db(sequelize.models.users);
+ */
+const handle = require('./../utils/promise_handler');
+
+const omitAsNull = function (value, options) {
+    return options && options.omitNull === true && value === null;
+};
+
+class DatabaseInstance {
+    constructor(model) {
+        this.model = model;
+    }
+
+    // Find by primary key
+    find(id) {
+        return handle(this.model.findByPk(id));
+    }
+
+    // Find one with query options
+    findOne(query) {
+        return handle(this.model.findOne(query));
+    }
+
+    // Find all with query options
+    findAll(query) {
+        return handle(this.model.findAll(query));
+    }
+
+    // Find by primary key
+    findByPk(id) {
+        return handle(this.model.findByPk(id));
+    }
+
+    // Fetch one with simple where clause
+    fetchOne(where) {
+        return handle(this.model.findOne({ where: where }));
+    }
+
+    // Fetch all with simple where clause
+    fetchAll(where) {
+        return handle(this.model.findAll({ where: where }));
+    }
+
+    // Execute raw query
+    query(query, options) {
+        return handle(this.model.sequelize.query(query, options || {}));
+    }
+
+    // Build model instance without saving
+    build(values, options) {
+        return this.model.build(values, options);
+    }
+
+    // Count records
+    count(query) {
+        return handle(this.model.count(query));
+    }
+
+    // Sum column
+    sum(field, query) {
+        return handle(this.model.sum(field, query));
+    }
+
+    // Destroy records
+    destroy(options) {
+        return handle(this.model.destroy(options));
+    }
+
+    // Update all matching records
+    updateAll(values, options) {
+        return handle(this.model.update(values, options));
+    }
+
+    // Create new record
+    create(values, options) {
+        return handle(this.model.create(values, options));
+    }
+
+    // Update existing instance
+    async update(instance, values, options) {
+        const changed = [];
+        const newValues = {};
+        options = options || { omitNull: true };
+
+        const dataValues = instance.toJSON();
+
+        if (values && Object.keys(values).length > 0) {
+            const attributes = Object.keys(this.model.rawAttributes);
+            for (const key in values) {
+                if (
+                    attributes.includes(key) &&
+                    String(values[key]) !== String(dataValues[key]) &&
+                    !omitAsNull(values[key], options)
+                ) {
                     changed.push(key);
-                    new_values[key] = values[key];
+                    newValues[key] = values[key];
                 }
             }
         }
-        let [instance, err] = await handle(this.model.update(new_values, options));
-        if(instance && changed.length > 0){
-            instance._changed = changed;
-            instance._previousDataValues = dataValues;
-        }
-        return [instance, err];
-    };
-    this.findAndCountAll = async function(query, options){return await handle(this.model.findAndCountAll(query, options));};
-    this.findOrCreate = async function(where, values, options){
-        let [instance, err] = await this.fetchOne(where);
-        if(err){return [undefined, err];}
-        if(instance){return [instance, err];}
-        else{return await handle(this.create(values, options));}
-    };
-    this.createOrUpdate = async function(where, values, options){
-        let model = this.model;
-        let [instance, err] = await this.fetchOne(where);
-        if(err){return [undefined, err];}
-        if(!instance){return await handle(model.create(values, options));}
-        else{return await handle(instance.update(values, options));}
-    };
 
-    this.bulkCreate = async function(values, options){return await handle(this.model.bulkCreate(values, options || {}));};
-};
+        const [result, err] = await handle(instance.update(newValues, options));
+        if (result && changed.length > 0) {
+            result._changed = changed;
+            result._previousDataValues = dataValues;
+        }
+        return [result, err];
+    }
+
+    // Find and count all
+    findAndCountAll(query) {
+        return handle(this.model.findAndCountAll(query));
+    }
+
+    // Find or create
+    async findOrCreate(where, values, options) {
+        const [instance, err] = await this.fetchOne(where);
+        if (err) {
+            return [undefined, err];
+        }
+        if (instance) {
+            return [instance, null];
+        }
+        return this.create(values, options);
+    }
+
+    // Create or update (upsert pattern)
+    async createOrUpdate(where, values, options) {
+        const [instance, err] = await this.fetchOne(where);
+        if (err) {
+            return [undefined, err];
+        }
+        if (!instance) {
+            return this.create(values, options);
+        }
+        return handle(instance.update(values, options));
+    }
+
+    // Bulk create
+    bulkCreate(values, options) {
+        return handle(this.model.bulkCreate(values, options || {}));
+    }
+
+    // Increment field
+    increment(field, options) {
+        return handle(this.model.increment(field, options));
+    }
+
+    // Decrement field
+    decrement(field, options) {
+        return handle(this.model.decrement(field, options));
+    }
+}
+
+module.exports = DatabaseInstance;

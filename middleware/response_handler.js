@@ -1,11 +1,18 @@
-const multer = require("multer");
-const responseH = require("./../utils/response");
-const Exception = require("eb-butler-utils").exceptions;
-const custom_exceptions = require("./../utils/custom_exceptions.json");
+const multer = require('multer');
+const responseH = require('./../utils/response');
+const Exception = require('eb-butler-utils').exceptions;
+const custom_exceptions = require('./../utils/custom_exceptions.json');
 const sequelize = require('./../db/sequelize/sequelize');
 
-const uc_words = str => String(str).trim().toLowerCase().replace(/\b[a-z]/g, s => s.toUpperCase());
-const setField = field => String(field || "").trim().replace(/_/g, " ");
+const uc_words = str =>
+    String(str)
+        .trim()
+        .toLowerCase()
+        .replace(/\b[a-z]/g, s => s.toUpperCase());
+const setField = field =>
+    String(field || '')
+        .trim()
+        .replace(/_/g, ' ');
 
 // Helpers
 
@@ -17,7 +24,7 @@ const getMessage = (lang, key, fallback) => {
 const parseSequelizeValidationError = (error, messages) => {
     const key = error?.validatorKey;
     const path = uc_words(setField(error?.path));
-    const value = String(error?.value || "");
+    const value = String(error?.value || '');
 
     const msgMap = {
         min: `Please enter positive integer value for ${path}`,
@@ -33,24 +40,22 @@ const parseSequelizeValidationError = (error, messages) => {
     return messages[key] || msgMap[key] || error?.message;
 };
 
-const errorHandler = async function (data, req, res, next) {
+const errorHandler = function (data, req, res, next) {
     const response = new responseH();
     const lang = req.lang || 'en';
     const messages = custom_exceptions[lang] || custom_exceptions.en;
 
-    let console_error = true;
+    let _console_error = true;
 
     try {
         if (data && !isNaN(data)) {
             response.setError(data, Exception(data), data);
-            console_error = false;
-        }
-
-        else if (data instanceof sequelize.sequelize.ValidationError) {
+            _console_error = false;
+        } else if (data instanceof sequelize.Sequelize.ValidationError) {
             const error = data.errors?.[0];
             const key = `${error.path}_${error.validatorKey}`; // like "email_isUnique"
             const fallback = `${uc_words(setField(error.path))} '${error.value}' is already taken`;
-            const message = messages[key] || messages[error.validatorKey] || fallback;
+            let message = messages[key] || messages[error.validatorKey] || fallback;
 
             if (error?.message === 'dob_not_future') {
                 message = getMessage(lang, 'dob_not_future', error.message);
@@ -63,48 +68,37 @@ const errorHandler = async function (data, req, res, next) {
                 response.setError(422, message, 422);
                 response.error = {
                     message: firstError.msg,
-                    type: "Express Validation Error"
+                    type: 'Express Validation Error'
                 };
             } else {
                 response.setError(error, Exception(422), 422);
                 response.message = message;
                 response.error = {
                     message: error.message,
-                    type: "Validation error"
+                    type: 'Validation error'
                 };
             }
 
-
-            console_error = false;
-        }
-
-        else if (data instanceof sequelize.sequelize.ValidationErrorItem) {
+            _console_error = false;
+        } else if (data instanceof sequelize.Sequelize.ValidationErrorItem) {
             const error = data;
             response.setError(error, Exception(422), 422);
             response.message = parseSequelizeValidationError(error, messages);
-            console_error = false;
-        }
-
-        else if (
-            data instanceof sequelize.sequelize.SequelizeScopeError ||
-            data instanceof sequelize.sequelize.DatabaseError ||
-            data instanceof sequelize.sequelize.InstanceError
+            _console_error = false;
+        } else if (
+            data instanceof sequelize.Sequelize.SequelizeScopeError ||
+            data instanceof sequelize.Sequelize.DatabaseError ||
+            data instanceof sequelize.Sequelize.InstanceError
         ) {
             response.setError(data, Exception(400), 400);
-        }
-
-        else if (data instanceof multer.MulterError) {
+        } else if (data instanceof multer.MulterError) {
             response.setError(data, Exception(411), 411);
-        }
-
-        else if (data instanceof sequelize.sequelize.BaseError) {
+        } else if (data instanceof sequelize.Sequelize.BaseError) {
             response.setError(data.message, Exception(500), 500);
-        }
-
-        else if (data instanceof TypeError) {
+        } else if (data instanceof TypeError) {
             try {
                 const parsed = JSON.parse(data.message);
-                const { type, limit, field } = parsed;
+                const { type: _type, limit, field } = parsed;
                 const key = `${field}_${limit}_length`;
                 const message = getMessage(lang, key, `Length ${limit} limit issue for ${field}`);
                 const responseData = response.setError(data, message, 412);
@@ -113,7 +107,7 @@ const errorHandler = async function (data, req, res, next) {
             } catch {
                 const message = getMessage(lang, data.message, data.message);
                 return res.status(412).json({
-                    status: "error",
+                    status: 'error',
                     statusCode: 412,
                     message,
                     data: {},
@@ -121,29 +115,25 @@ const errorHandler = async function (data, req, res, next) {
                     errorStack: data.stack
                 });
             }
-        }
-
-        else if (data instanceof Error) {
+        } else if (data instanceof Error) {
             response.setError(data.message, Exception(500), 500);
-        }
-
-        else {
+        } else {
             response.setSuccess(data, Exception(200), 200);
-            console_error = false;
+            _console_error = false;
         }
 
-        if (response.status === "error") {
+        if (response.status === 'error') {
             response.setErrorStack(data.stack); // Retained as per your need
         }
 
         response.sendRes(req, res);
         return next();
     } catch (err) {
-        console.log("Unexpected error:", err);
+        console.log('Unexpected error:', err);
         res.status(500).json({
-            status: "error",
+            status: 'error',
             statusCode: 500,
-            message: "Unexpected server error",
+            message: 'Unexpected server error',
             error: err.message
         });
     }

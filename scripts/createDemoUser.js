@@ -75,7 +75,6 @@ async function createDemoUser() {
         console.log('═══════════════════════════════════════\n');
         console.log('You can now login at: http://localhost:5173');
         console.log('Select "Customer" role and use the credentials above.\n');
-
     } catch (error) {
         console.error('❌ Error creating demo user:', error.message);
         console.error(error);

@@ -1,8 +1,8 @@
 /**
  * Database Seeder for Test Data
- * 
+ *
  * This script creates sample data for testing the application
- * 
+ *
  * Usage: node scripts/seedDatabase.js
  */
 
@@ -59,7 +59,8 @@ const sampleProducts = [
         category: 'Pastries',
         rating_count: 124,
         ingredients: ['flour', 'butter', 'dark chocolate', 'eggs', 'yeast', 'sugar'],
-        description: 'Buttery, flaky pastry filled with rich Belgian chocolate. A classic French treat perfect for breakfast or dessert.',
+        description:
+            'Buttery, flaky pastry filled with rich Belgian chocolate. A classic French treat perfect for breakfast or dessert.',
         tagline: 'Classic French indulgence',
         images: [
             'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800',
@@ -75,7 +76,8 @@ const sampleProducts = [
         category: 'Pastries',
         rating_count: 256,
         ingredients: ['flour', 'butter', 'eggs', 'yeast', 'sugar', 'salt'],
-        description: 'Light, flaky layers of pure butter goodness. Our signature croissant is made with premium European butter.',
+        description:
+            'Light, flaky layers of pure butter goodness. Our signature croissant is made with premium European butter.',
         tagline: 'Pure butter perfection',
         images: ['https://images.unsplash.com/photo-1549903072-7e6e0bedb7fb?w=800'],
         stock: 80
@@ -88,7 +90,8 @@ const sampleProducts = [
         category: 'Pastries',
         rating_count: 98,
         ingredients: ['flour', 'butter', 'almonds', 'almond cream', 'eggs', 'sugar'],
-        description: 'Croissant filled with almond cream and topped with sliced almonds and powdered sugar.',
+        description:
+            'Croissant filled with almond cream and topped with sliced almonds and powdered sugar.',
         tagline: 'Nutty indulgence',
         images: ['https://images.unsplash.com/photo-1623334044303-241021148842?w=800'],
         stock: 40
@@ -101,7 +104,8 @@ const sampleProducts = [
         category: 'Pastries',
         rating_count: 87,
         ingredients: ['flour', 'butter', 'fruit jam', 'cream cheese', 'eggs'],
-        description: 'Flaky pastry with fruit filling and cream cheese, finished with a sweet glaze.',
+        description:
+            'Flaky pastry with fruit filling and cream cheese, finished with a sweet glaze.',
         tagline: 'Danish delight',
         images: ['https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=800'],
         stock: 35
@@ -115,7 +119,8 @@ const sampleProducts = [
         category: 'Pastries',
         rating_count: 178,
         ingredients: ['flour', 'butter', 'cinnamon', 'brown sugar', 'cream cheese frosting'],
-        description: 'Soft, gooey cinnamon roll swirled with cinnamon sugar and topped with cream cheese frosting.',
+        description:
+            'Soft, gooey cinnamon roll swirled with cinnamon sugar and topped with cream cheese frosting.',
         tagline: 'Warm cinnamon heaven',
         images: ['https://images.unsplash.com/photo-1609126979532-c48ce8a70add?w=800'],
         stock: 45
@@ -130,7 +135,8 @@ const sampleProducts = [
         category: 'Breads',
         rating_count: 312,
         ingredients: ['flour', 'water', 'salt', 'sourdough starter'],
-        description: 'Traditional sourdough with a perfectly crispy crust and soft, tangy interior. 24-hour fermentation.',
+        description:
+            'Traditional sourdough with a perfectly crispy crust and soft, tangy interior. 24-hour fermentation.',
         tagline: 'Artisan crafted perfection',
         images: [
             'https://images.unsplash.com/photo-1585478259715-876acc5be8eb?w=800',
@@ -146,7 +152,8 @@ const sampleProducts = [
         category: 'Breads',
         rating_count: 234,
         ingredients: ['flour', 'water', 'yeast', 'salt'],
-        description: 'Crispy golden crust with a light, airy interior. Baked fresh daily using traditional French techniques.',
+        description:
+            'Crispy golden crust with a light, airy interior. Baked fresh daily using traditional French techniques.',
         tagline: 'Authentically French',
         images: ['https://images.unsplash.com/photo-1568471173242-461f0a730452?w=800'],
         stock: 40
@@ -159,7 +166,8 @@ const sampleProducts = [
         category: 'Breads',
         rating_count: 156,
         ingredients: ['whole wheat flour', 'water', 'honey', 'yeast', 'salt'],
-        description: 'Hearty whole wheat bread made with 100% whole grain flour. Perfect for sandwiches and toast.',
+        description:
+            'Hearty whole wheat bread made with 100% whole grain flour. Perfect for sandwiches and toast.',
         tagline: 'Healthy and hearty',
         images: ['https://images.unsplash.com/photo-1598373182133-52452f7691ef?w=800'],
         stock: 30
@@ -172,7 +180,8 @@ const sampleProducts = [
         category: 'Breads',
         rating_count: 145,
         ingredients: ['flour', 'water', 'olive oil', 'yeast', 'salt'],
-        description: 'Italian-style bread with a light, airy interior and crispy crust. Perfect for paninis.',
+        description:
+            'Italian-style bread with a light, airy interior and crispy crust. Perfect for paninis.',
         tagline: 'Italian classic',
         images: ['https://images.unsplash.com/photo-1574085733277-851d9d856a3a?w=800'],
         stock: 35
@@ -214,7 +223,8 @@ const sampleProducts = [
         category: 'Desserts',
         rating_count: 267,
         ingredients: ['almond flour', 'egg whites', 'sugar', 'various fillings'],
-        description: 'Assorted French macarons in raspberry, vanilla, pistachio, chocolate, and lavender flavors.',
+        description:
+            'Assorted French macarons in raspberry, vanilla, pistachio, chocolate, and lavender flavors.',
         tagline: 'Six flavors of joy',
         images: [
             'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=800',
@@ -230,7 +240,8 @@ const sampleProducts = [
         category: 'Desserts',
         rating_count: 198,
         ingredients: ['mascarpone', 'espresso', 'ladyfingers', 'cocoa', 'eggs'],
-        description: 'Classic Italian dessert with layers of espresso-soaked ladyfingers and creamy mascarpone.',
+        description:
+            'Classic Italian dessert with layers of espresso-soaked ladyfingers and creamy mascarpone.',
         tagline: 'Pick me up in a cup',
         images: ['https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800'],
         stock: 15
@@ -243,7 +254,8 @@ const sampleProducts = [
         category: 'Desserts',
         rating_count: 321,
         ingredients: ['dark chocolate', 'butter', 'sugar', 'flour', 'eggs', 'walnuts'],
-        description: 'Rich, fudgy brownies made with premium dark chocolate and topped with walnuts.',
+        description:
+            'Rich, fudgy brownies made with premium dark chocolate and topped with walnuts.',
         tagline: 'Fudgy chocolate heaven',
         images: ['https://images.unsplash.com/photo-1564355808539-22fda35bed7e?w=800'],
         stock: 60
@@ -337,7 +349,8 @@ const sampleProducts = [
         category: 'Cupcakes',
         rating_count: 89,
         ingredients: ['flour', 'lemon zest', 'lemon curd', 'butter', 'cream cheese'],
-        description: 'Bright and zesty lemon cupcake with lemon curd filling and cream cheese frosting.',
+        description:
+            'Bright and zesty lemon cupcake with lemon curd filling and cream cheese frosting.',
         tagline: 'Citrus sunshine',
         images: ['https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800'],
         stock: 38
@@ -350,7 +363,8 @@ const sampleProducts = [
         category: 'Cupcakes',
         rating_count: 156,
         ingredients: ['flour', 'strawberries', 'whipped cream', 'vanilla', 'butter'],
-        description: 'Light vanilla cupcake filled with fresh strawberries and topped with whipped cream.',
+        description:
+            'Light vanilla cupcake filled with fresh strawberries and topped with whipped cream.',
         tagline: 'Summer in a cupcake',
         images: ['https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=800'],
         stock: 35
@@ -419,9 +433,7 @@ async function seedDatabase() {
             {
                 order_id: 'order_test_002',
                 user_id: 'user_test_002',
-                cart_items: [
-                    { productId: 5, quantity: 1, price: 15.99 }
-                ],
+                cart_items: [{ productId: 5, quantity: 1, price: 15.99 }],
                 delivery_address: {
                     street: '456 Oak Ave',
                     city: 'Los Angeles',
@@ -485,7 +497,6 @@ async function seedDatabase() {
         console.log('   1. Start the server: npm start');
         console.log('   2. Test endpoints with Postman');
         console.log('   3. Login with: john.doe@example.com or jane.smith@example.com');
-
     } catch (error) {
         console.error('\n❌ Seeding failed:', error);
     } finally {

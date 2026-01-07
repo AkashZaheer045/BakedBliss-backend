@@ -1,5 +1,4 @@
-// const server_config = require("./../config/server");
-var config = require('../config/config.json')
+// const server_config = require(\"./../config/server\");
 
 //--//
 module.exports = class {
@@ -10,30 +9,30 @@ module.exports = class {
         this.data = null;
         this.error = null;
         this.errorStack = null;
-    };
+    }
     setSuccess(data, message, statusCode) {
-        this.status = "success";
+        this.status = 'success';
         this.statusCode = statusCode || 200;
-        this.message = message || "OK";
+        this.message = message || 'OK';
         this.data = data;
         this.error = null;
         return this;
-    };
+    }
     setError(error, message, statusCode) {
-        this.status = "error";
+        this.status = 'error';
         this.statusCode = statusCode || 500;
-        this.message = message || "Error";
+        this.message = message || 'Error';
         this.data = {};
         this.error = error;
         this.errorStack = null;
         return this;
-    };
+    }
     setErrorStack(stack) {
         this.errorStack = stack || null;
         return this;
-    };
+    }
     sendRes(req, res) {
-        let result = {
+        const result = {
             status: this.status,
             statusCode: this.statusCode,
             message: this.message,
@@ -43,7 +42,9 @@ module.exports = class {
             // UID: req.UID
         };
         // console.log(result);
-        if (req.statusMessage && req.statusMessage !== "") { result.message = req.statusMessage; }
+        if (req.statusMessage && req.statusMessage !== '') {
+            result.message = req.statusMessage;
+        }
         // if(!server_config.enc_enabled){req.enc_password = "";}
         // if(req.enc_password && req.enc_password !== ""){
         //     let password = req.enc_password;

@@ -6,20 +6,15 @@ const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
 
 // Create Sequelize instance
-const sequelize = new Sequelize(
-    dbConfig.database,
-    dbConfig.username,
-    dbConfig.password,
-    {
-        host: dbConfig.host,
-        port: dbConfig.port,
-        dialect: dbConfig.dialect,
-        logging: dbConfig.logging,
-        pool: dbConfig.pool,
-        dialectOptions: dbConfig.dialectOptions,
-        define: dbConfig.define
-    }
-);
+const sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    dialect: dbConfig.dialect,
+    logging: dbConfig.logging,
+    pool: dbConfig.pool,
+    dialectOptions: dbConfig.dialectOptions,
+    define: dbConfig.define
+});
 
 // Import models
 const User = require('../db/schemas/users')(sequelize, Sequelize.DataTypes);

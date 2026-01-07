@@ -31,7 +31,7 @@ const isAdmin = (req, res, next) => {
 /**
  * Middleware to check if user has specific role
  */
-const hasRole = (roles) => {
+const hasRole = roles => {
     return (req, res, next) => {
         try {
             if (!req.user) {
