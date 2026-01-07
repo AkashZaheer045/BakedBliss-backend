@@ -4,6 +4,8 @@
  */
 let connection = null;
 const Sequelize = require('sequelize');
+// Explicitly require mysql2 for Vercel bundling
+require('mysql2');
 const configFull = require('./../../config/config.json');
 
 // Determine environment
