@@ -88,6 +88,24 @@ const addItemToCart = async (userId, productId, quantity) => {
         // Wait, if we only store ID, we need to enrich return value here too.
 
         const itemIndex = cartItems.findIndex(item => item.productId === productId);
+        let currentQty = 0;
+        if (itemIndex > -1) {
+            currentQty = cartItems[itemIndex].quantity;
+        }
+
+        const newTotalQty = currentQty + quantity;
+
+        // Check stock availability
+        if (newTotalQty > product.stock) {
+            return [
+                null,
+                {
+                    message: `Insufficient stock. Only ${product.stock} items available.`,
+                    status: 400
+                }
+            ];
+        }
+
         if (itemIndex > -1) {
             cartItems[itemIndex].quantity += quantity;
         } else {
@@ -167,6 +185,22 @@ const updateCartItem = async (userId, productId, quantity) => {
         const itemIndex = cartItems.findIndex(item => item.productId === productId);
 
         if (itemIndex > -1) {
+            // Check stock availability (fetch product first since we need stock)
+            const [product, prodErr] = await productInstance.findByPk(productId);
+            if (prodErr || !product) {
+                return [null, { message: 'Product not found', status: 404 }];
+            }
+
+            if (quantity > product.stock) {
+                return [
+                    null,
+                    {
+                        message: `Insufficient stock. Only ${product.stock} items available.`,
+                        status: 400
+                    }
+                ];
+            }
+
             cartItems[itemIndex].quantity = quantity;
             cart.items = cartItems;
             cart.changed('items', true);
