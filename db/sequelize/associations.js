@@ -50,14 +50,7 @@ module.exports = function (db) {
         as: 'product'
     });
 
-    // User <-> Contact Messages Association (optional)
-    db.users.hasMany(db.contact_messages, {
-        foreignKey: 'user_id',
-        as: 'messages'
-    });
-    db.contact_messages.belongsTo(db.users, {
-        foreignKey: 'user_id',
-        as: 'user'
-    });
+    // Note: contact_messages is not linked to users (allows anonymous contact)
+    // If you want to link messages to users, add user_id column to contact_messages table
     // console.log('✅ Model associations initialized');
 };

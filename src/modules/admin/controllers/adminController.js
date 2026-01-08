@@ -308,12 +308,12 @@ const getReviewsSummary = async (req, res) => {
         return successResponse(res, 'Reviews retrieved successfully', {
             reviews: (messages || []).map(msg => ({
                 id: msg.id,
-                name: msg.name,
+                name: msg.full_name || msg.name || 'Anonymous',
                 email: msg.email,
-                subject: msg.subject,
+                subject: msg.subject || 'Customer Feedback',
                 message: msg.message,
                 status: msg.status || 'pending',
-                createdAt: msg.created_at
+                createdAt: msg.created_at || msg.date
             })),
             pagination: {
                 total: total || 0,
