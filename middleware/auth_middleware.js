@@ -10,7 +10,8 @@ const authenticateToken = (req, res, next) => {
         }
 
         const token = authHeader.split('Bearer ')[1];
-        const secret = process.env.JWT_SECRET;
+        // Use JWT_SECRET_KEY for consistency with global auth middleware
+        const secret = process.env.JWT_SECRET_KEY || process.env.JWT_SECRET;
 
         // Verify JWT
         const decoded = jwt.verify(token, secret);
