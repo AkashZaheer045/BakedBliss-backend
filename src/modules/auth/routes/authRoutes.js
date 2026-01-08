@@ -71,7 +71,7 @@ const routes = function () {
         .post(passwordResetLimiter, authRules.rule('resetPassword'), Validation.validate, resetPassword);
 
     // Token refresh (public - uses refresh token for auth)
-    router.route('/refresh-token').post(refreshToken);
+    router.route('/refresh-token').post(authRules.rule('refreshToken'), Validation.validate, refreshToken);
 
     // Logout
     router.route('/logout').post(logout);

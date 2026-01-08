@@ -46,7 +46,7 @@ ValidationRules.rule = method => {
                     .custom(validatePassword)
                     .withMessage(PASSWORD_ERROR_MESSAGE),
 
-                body('phone')
+                body('phoneNumber')
                     .optional()
                     .custom(validatePhone)
                     .withMessage('Please provide a valid phone number')
@@ -68,7 +68,12 @@ ValidationRules.rule = method => {
 
         case 'verifyOtp': {
             return [
-                body('email').trim().isEmail().withMessage('Invalid email format'),
+                body('email')
+                    .trim()
+                    .notEmpty()
+                    .withMessage('Email is required')
+                    .isEmail()
+                    .withMessage('Invalid email format'),
 
                 body('otp')
                     .notEmpty()
@@ -79,7 +84,20 @@ ValidationRules.rule = method => {
         }
 
         case 'resendOtp': {
-            return [body('email').trim().isEmail().withMessage('Invalid email format')];
+            return [
+                body('email')
+                    .trim()
+                    .notEmpty()
+                    .withMessage('Email is required')
+                    .isEmail()
+                    .withMessage('Invalid email format')
+            ];
+        }
+
+        case 'refreshToken': {
+            return [
+                body('refreshToken').notEmpty().withMessage('Refresh token is required')
+            ];
         }
 
         case 'forgotPassword': {

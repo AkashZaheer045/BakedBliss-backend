@@ -41,18 +41,6 @@ const signUpUser = async (req, res) => {
         const { fullName, email, password, profilePicture, addresses, selectedAddressId, phoneNumber, role } =
             req.body;
 
-        if (!fullName) {
-            return sendError(res, { status: 400, message: 'Full name is required' });
-        }
-
-        if (!email) {
-            return sendError(res, { status: 400, message: 'Email is required' });
-        }
-
-        if (!password) {
-            return sendError(res, { status: 400, message: 'Password is required' });
-        }
-
         const [result, error] = await AuthService.signUp({
             fullName,
             email,
@@ -93,10 +81,6 @@ const signInUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return sendError(res, { status: 400, message: 'Email and password are required' });
-        }
-
         const [result, error] = await AuthService.signIn(email, password);
 
         if (error) {
@@ -127,10 +111,6 @@ const signInWithOTP = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return sendError(res, { status: 400, message: 'Email and password are required' });
-        }
-
         const [result, error] = await AuthService.signInWithOTP(email, password);
 
         if (error) {
@@ -152,10 +132,6 @@ const signInWithOTP = async (req, res) => {
 const verifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
-
-        if (!email || !otp) {
-            return sendError(res, { status: 400, message: 'Email and OTP are required' });
-        }
 
         const [result, error] = await AuthService.verifyOTPAndLogin(email, otp);
 
@@ -187,10 +163,6 @@ const resendOTP = async (req, res) => {
     try {
         const { email } = req.body;
 
-        if (!email) {
-            return sendError(res, { status: 400, message: 'Email is required' });
-        }
-
         const [result, error] = await AuthService.resendOTP(email);
 
         if (error) {
@@ -212,10 +184,6 @@ const resendOTP = async (req, res) => {
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-
-        if (!email) {
-            return sendError(res, { status: 400, message: 'Email is required' });
-        }
 
         const [result, error] = await AuthService.requestPasswordReset(email);
 
@@ -239,10 +207,6 @@ const resetPassword = async (req, res) => {
     try {
         const { email, token, password } = req.body;
 
-        if (!email || !token || !password) {
-            return sendError(res, { status: 400, message: 'Email, token, and new password are required' });
-        }
-
         const [result, error] = await AuthService.resetPassword(email, token, password);
 
         if (error) {
@@ -264,10 +228,6 @@ const resetPassword = async (req, res) => {
 const refreshToken = async (req, res) => {
     try {
         const { refreshToken: token } = req.body;
-
-        if (!token) {
-            return sendError(res, { status: 400, message: 'Refresh token is required' });
-        }
 
         const [result, error] = await AuthService.refreshAccessToken(token);
 
@@ -301,10 +261,6 @@ const changePassword = async (req, res) => {
 
         if (!userId) {
             return sendError(res, { status: 401, message: 'Authentication required' });
-        }
-
-        if (!currentPassword || !newPassword) {
-            return sendError(res, { status: 400, message: 'Current password and new password are required' });
         }
 
         const [result, error] = await AuthService.changePassword(userId, currentPassword, newPassword);
