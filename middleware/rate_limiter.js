@@ -37,13 +37,13 @@ const apiLimiter = rateLimit({
 
 /**
  * Authentication endpoint limiter
- * 5 failed attempts per 15 minutes
+ * 10 failed attempts per 15 minutes
  * Applied to login and verify-otp
  * Skips successful requests (200 status)
  */
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit to 5 failed attempts
+    max: 10, // Limit to 5 failed attempts
     message: createLimitMessage('Too many login attempts. Please try again in 15 minutes.'),
     standardHeaders: true,
     legacyHeaders: false,
@@ -94,9 +94,9 @@ const passwordResetLimiter = rateLimit({
  * Prevents mass account creation
  */
 const registrationLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 5, // Limit to 5 registrations per hour
-    message: createLimitMessage('Too many registration attempts. Please try again in 1 hour.'),
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 5, // Limit to 5 registrations per 5 minutes
+    message: createLimitMessage('Too many registration attempts. Please try again in 5 minutes.'),
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res, _next, options) => {
