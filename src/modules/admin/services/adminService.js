@@ -33,59 +33,89 @@ const getDashboardStats = async (period = 'week') => {
         const orderInstance = new db(models.orders);
         const userInstance = new db(models.users);
 
-        // Get total revenue
-        const [revenueResult] = await orderInstance.findAll({
-            attributes: [[Sequelize.fn('SUM', Sequelize.col('total_amount')), 'totalRevenue']],
-            where: {
-                created_at: { [Op.gte]: startDate },
-                deleted_at: null
-            },
-            raw: true
-        });
+        // Execute queries in parallel for better performance
+        const [
+            revenueResultData,
+            totalOrdersData,
+            pendingOrdersData,
+            totalCustomersData,
+            recentOrdersData,
+            topProductsDataResult,
+            revenueChartData
+        ] = await Promise.all([
+            // 1. Total Revenue
+            orderInstance.findAll({
+                attributes: [[Sequelize.fn('SUM', Sequelize.col('total_amount')), 'totalRevenue']],
+                where: {
+                    created_at: { [Op.gte]: startDate },
+                    deleted_at: null
+                },
+                raw: true
+            }),
+            // 2. Total Orders
+            orderInstance.count({
+                where: {
+                    created_at: { [Op.gte]: startDate },
+                    deleted_at: null
+                }
+            }),
+            // 3. Pending Orders
+            orderInstance.count({
+                where: {
+                    status: 'Pending',
+                    deleted_at: null
+                }
+            }),
+            // 4. Total Customers
+            userInstance.count({
+                where: {
+                    role: 'user',
+                    deleted_at: null
+                }
+            }),
+            // 5. Recent Orders
+            orderInstance.findAll({
+                limit: 5,
+                order: [['created_at', 'DESC']],
+                where: { deleted_at: null }
+            }),
+            // 6. Top Products Source Data
+            orderInstance.findAll({
+                attributes: ['cart_items'],
+                where: {
+                    created_at: { [Op.gte]: startDate },
+                    deleted_at: null
+                },
+                raw: true
+            }),
+            // 7. Revenue Chart
+            orderInstance.findAll({
+                attributes: [
+                    [Sequelize.fn('DATE', Sequelize.col('created_at')), 'date'],
+                    [Sequelize.fn('SUM', Sequelize.col('total_amount')), 'revenue']
+                ],
+                where: {
+                    created_at: { [Op.gte]: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) },
+                    deleted_at: null
+                },
+                group: [Sequelize.fn('DATE', Sequelize.col('created_at'))],
+                order: [[Sequelize.fn('DATE', Sequelize.col('created_at')), 'ASC']],
+                raw: true
+            })
+        ]);
+
+        // Destructure results from the wrapper response [data, err]
+        const [revenueResult] = revenueResultData;
+        const [totalOrders] = totalOrdersData;
+        const [pendingOrders] = pendingOrdersData;
+        const [totalCustomers] = totalCustomersData;
+        const [recentOrders] = recentOrdersData;
+        const [topProductsData] = topProductsDataResult;
+        const [revenueChart] = revenueChartData;
 
         const totalRevenue = parseFloat(revenueResult?.[0]?.totalRevenue || 0);
 
-        // Get total orders
-        const [totalOrders] = await orderInstance.count({
-            where: {
-                created_at: { [Op.gte]: startDate },
-                deleted_at: null
-            }
-        });
-
-        // Get pending orders
-        const [pendingOrders] = await orderInstance.count({
-            where: {
-                status: 'Pending',
-                deleted_at: null
-            }
-        });
-
-        // Get total customers
-        const [totalCustomers] = await userInstance.count({
-            where: {
-                role: 'user',
-                deleted_at: null
-            }
-        });
-
-        // Get recent orders
-        const [recentOrders] = await orderInstance.findAll({
-            limit: 5,
-            order: [['created_at', 'DESC']],
-            where: { deleted_at: null }
-        });
-
-        // Get top products
-        const [topProductsData] = await orderInstance.findAll({
-            attributes: ['cart_items'],
-            where: {
-                created_at: { [Op.gte]: startDate },
-                deleted_at: null
-            },
-            raw: true
-        });
-
+        // Process top products locally
         const productSales = {};
         (topProductsData || []).forEach(order => {
             if (order.cart_items && Array.isArray(order.cart_items)) {
@@ -108,21 +138,6 @@ const getDashboardStats = async (period = 'week') => {
         const topProducts = Object.values(productSales)
             .sort((a, b) => b.sales - a.sales)
             .slice(0, 5);
-
-        // Get revenue chart
-        const [revenueChart] = await orderInstance.findAll({
-            attributes: [
-                [Sequelize.fn('DATE', Sequelize.col('created_at')), 'date'],
-                [Sequelize.fn('SUM', Sequelize.col('total_amount')), 'revenue']
-            ],
-            where: {
-                created_at: { [Op.gte]: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) },
-                deleted_at: null
-            },
-            group: [Sequelize.fn('DATE', Sequelize.col('created_at'))],
-            order: [[Sequelize.fn('DATE', Sequelize.col('created_at')), 'ASC']],
-            raw: true
-        });
 
         return [
             {
