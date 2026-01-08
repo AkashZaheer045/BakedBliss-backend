@@ -4,7 +4,7 @@
   "description": "A Baked bliss application",
   "main": "app.js",
   "engines": {
-    "node": "20.x"
+    "node": ">=22"
   },
   "scripts": {
     "start": "node app.js",
@@ -32,7 +32,6 @@
   "dependencies": {
     "console-stamp": "^3.1.2",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
     "eb-butler-utils": "^1.0.11",
     "express": "^5.1.0",
@@ -56,6 +55,6 @@
     "eslint-plugin-security": "^2.1.1",
     "jest": "^29.7.0",
     "prettier": "^3.7.4",
-    "supertest": "^6.3.4"
+    "supertest": "^7.2.2"
   }
 }

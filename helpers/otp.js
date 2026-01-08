@@ -146,8 +146,8 @@ const getRemainingAttempts = email => {
     const key = email.toLowerCase();
     const attempts = attemptStore.get(key);
 
-    if (!attempts) return MAX_ATTEMPTS;
-    if (attempts.lockedUntil && Date.now() < attempts.lockedUntil) return 0;
+    if (!attempts) {return MAX_ATTEMPTS;}
+    if (attempts.lockedUntil && Date.now() < attempts.lockedUntil) {return 0;}
     if (attempts.lockedUntil && Date.now() >= attempts.lockedUntil) {
         // Lockout expired, reset
         attemptStore.delete(key);
