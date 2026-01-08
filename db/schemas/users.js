@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             push_token: { type: DataTypes.STRING(512), allowNull: true },
             password: { type: DataTypes.STRING(1024), allowNull: true }, // Hashed password
             salt: { type: DataTypes.STRING(512), allowNull: true }, // Salt for hashing
+            is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
             date_joined: { type: DataTypes.DATE, allowNull: true },
             created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
             updated_at: { type: DataTypes.DATE, allowNull: true },

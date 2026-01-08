@@ -2,14 +2,21 @@
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.addColumn('users', 'password', {
-            type: Sequelize.STRING(1024),
-            allowNull: true // Allow null for existing users or social login
-        });
-        await queryInterface.addColumn('users', 'salt', {
-            type: Sequelize.STRING(512),
-            allowNull: true // Allow null for existing users or social login
-        });
+        const table = await queryInterface.describeTable('users');
+
+        if (!table.password) {
+            await queryInterface.addColumn('users', 'password', {
+                type: Sequelize.STRING(1024),
+                allowNull: true
+            });
+        }
+
+        if (!table.salt) {
+            await queryInterface.addColumn('users', 'salt', {
+                type: Sequelize.STRING(512),
+                allowNull: true
+            });
+        }
     },
 
     down: async (queryInterface, _Sequelize) => {

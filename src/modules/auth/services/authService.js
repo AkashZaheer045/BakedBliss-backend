@@ -225,6 +225,10 @@ const signInWithOTP = async (email, password) => {
             return [null, { message: 'User does not exist', status: 400 }];
         }
 
+        if (user.is_active === false) {
+            return [null, { message: 'Your account has been deactivated. Please contact support.', status: 403 }];
+        }
+
         if (!user.password || !user.salt) {
             return [null, { message: 'Please use social login for this account', status: 400 }];
         }
@@ -274,6 +278,10 @@ const signIn = async (email, password) => {
             return [null, { message: 'User does not exist', status: 400 }];
         }
 
+        if (user.is_active === false) {
+            return [null, { message: 'Your account has been deactivated. Please contact support.', status: 403 }];
+        }
+
         if (!user.password || !user.salt) {
             return [null, { message: 'Please use social login for this account', status: 400 }];
         }
@@ -318,6 +326,10 @@ const verifyOTPAndLogin = async (email, otp) => {
         }
         if (!user) {
             return [null, { message: 'User not found', status: 404 }];
+        }
+
+        if (user.is_active === false) {
+            return [null, { message: 'Your account has been deactivated. Please contact support.', status: 403 }];
         }
 
         // Generate tokens
@@ -577,6 +589,10 @@ const socialLogin = async ({
         }
 
         if (existingUser) {
+            if (existingUser.is_active === false) {
+                return [null, { message: 'Your account has been deactivated. Please contact support.', status: 403 }];
+            }
+
             if (pushToken && pushToken.trim() !== '') {
                 existingUser.push_token = pushToken;
                 await existingUser.save();

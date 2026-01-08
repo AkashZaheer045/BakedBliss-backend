@@ -34,7 +34,8 @@ const models = {
     orders: require('./../schemas/orders')(connection, Sequelize),
     carts: require('./../schemas/carts')(connection, Sequelize),
     favorites: require('./../schemas/favorites')(connection, Sequelize),
-    contact_messages: require('./../schemas/contact_messages')(connection, Sequelize)
+    contact_messages: require('./../schemas/contact_messages')(connection, Sequelize),
+    activity_logs: require('./../schemas/activity_logs')(connection, Sequelize)
 };
 
 // Apply hooks (lifecycle callbacks)

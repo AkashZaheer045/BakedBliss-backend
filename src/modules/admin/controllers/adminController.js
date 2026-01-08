@@ -132,6 +132,7 @@ const getAllCustomers = async (req, res) => {
             return {
                 id: user.id,
                 userId: user.user_id,
+                isActive: user.is_active,
                 name: user.full_name,
                 email: user.email,
                 phone: user.phone_number,
@@ -182,6 +183,7 @@ const getCustomerDetails = async (req, res) => {
             customer: {
                 id: user.id,
                 userId: user.user_id,
+                isActive: user.is_active,
                 name: user.full_name,
                 email: user.email,
                 phone: user.phone_number,
@@ -366,13 +368,111 @@ const getPromotions = async (req, res) => {
     }
 };
 
+/**
+ * Get activity logs
+ */
+const getActivityLogs = async (req, res) => {
+    try {
+        const { page = 1, limit = 20 } = req.query;
+        const offset = (page - 1) * limit;
+
+        // Check if logs model exists (it might be newly added)
+        if (!models.activity_logs) {
+            return successResponse(res, 'Logs feature not fully initialized', { logs: [], total: 0 });
+        }
+
+        const logInstance = new db(models.activity_logs);
+
+        // Simple count since count() might return array or object depending on driver
+        // Using a try-catch for safest count execution if table empty
+        let total = 0;
+        try {
+            const [countData] = await logInstance.count({});
+            total = typeof countData === 'number' ? countData : (countData?.count || 0);
+        } catch (e) { console.log('Log count error', e); }
+
+        const [logs, findErr] = await logInstance.findAll({
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            order: [['created_at', 'DESC']]
+        });
+
+        if (findErr) {
+            console.error('Error finding logs:', findErr);
+            return errorResponse(res, 'Failed to fetch logs', 500);
+        }
+
+        return successResponse(res, 'Activity logs retrieved', {
+            logs: logs || [],
+            pagination: {
+                total: total || 0,
+                page: parseInt(page),
+                limit: parseInt(limit),
+                totalPages: Math.ceil((total || 0) / limit)
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching logs:', error);
+        return errorResponse(res, 'Failed to fetch logs', 500);
+    }
+};
+
+/**
+ * Update customer status (Activate/Deactivate)
+ */
+const updateCustomerStatus = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { isActive } = req.body; // Boolean
+        if (isActive === undefined) {
+            return errorResponse(res, 'isActive status is required', 400);
+        }
+
+        const userInstance = new db(models.users);
+
+        // Use updateAll for query-based update
+        const [updateResult, error] = await userInstance.updateAll(
+            { is_active: isActive },
+            { where: { user_id: userId } }
+        );
+
+        if (error) {
+            console.error('[Admin] Database update error:', error);
+            // Include error message in response for debugging
+            return errorResponse(res, `Failed to update user status: ${error.message}`, 500);
+        }
+
+        // Log this action!
+        if (models.activity_logs) {
+            const logInstance = new db(models.activity_logs);
+            const actor = req.user?.email || 'admin';
+            try {
+                await logInstance.create({
+                    user_id: userId,
+                    action: isActive ? 'USER_ACTIVATED' : 'USER_DEACTIVATED',
+                    details: JSON.stringify({ actor, timestamp: new Date() })
+                });
+            } catch (logErr) {
+                console.error('Failed to create audit log', logErr);
+            }
+        }
+
+        return successResponse(res, `User ${isActive ? 'activated' : 'deactivated'} successfully`);
+    } catch (error) {
+        console.error('Error updating user status:', error);
+        return errorResponse(res, 'Failed to update user status', 500);
+    }
+};
+
 module.exports = {
     getAllOrders,
     updateOrderStatus,
     getAllCustomers,
     getCustomerDetails,
+    updateCustomerStatus,
     getSettings,
     getPaymentSummary,
     getReviewsSummary,
-    getPromotions
+    getPromotions,
+    getActivityLogs
 };

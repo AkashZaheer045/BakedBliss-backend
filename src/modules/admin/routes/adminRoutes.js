@@ -9,10 +9,12 @@ const {
     updateOrderStatus,
     getAllCustomers,
     getCustomerDetails,
+    updateCustomerStatus,
     getSettings,
     getPaymentSummary,
     getReviewsSummary,
-    getPromotions
+    getPromotions,
+    getActivityLogs
 } = require('../controllers/adminController');
 const { isAdmin } = require('../../../../middleware/role_middleware.js');
 
@@ -40,7 +42,9 @@ const routes = function () {
 
     // ==================== CUSTOMERS ====================
     router.get('/customers', getAllCustomers);
+    router.get('/customers/logs', getActivityLogs);
     router.get('/customers/:userId', getCustomerDetails);
+    router.patch('/customers/:userId/status', updateCustomerStatus);
 
     // ==================== PAYMENTS ====================
     router.get('/payments/summary', getPaymentSummary);
