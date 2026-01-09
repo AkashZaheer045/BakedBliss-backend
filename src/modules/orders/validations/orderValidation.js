@@ -22,11 +22,11 @@ ValidationRules.rule = method => {
 
                 body('delivery_address.city').notEmpty().withMessage('City is required'),
 
-                body('delivery_address.state').optional(),
+                body('delivery_address.state').optional().isAlpha().withMessage('State is required'),
 
-                body('delivery_address.zip_code').notEmpty().withMessage('ZIP code is required'),
+                body('delivery_address.zip_code').notEmpty().isNumeric().withMessage('ZIP code is required'),
 
-                body('delivery_address.country').optional().default('Pakistan'),
+                body('delivery_address.country').optional().default('Pakistan').isString().withMessage('Country is required'),
 
                 body('payment_method')
                     .optional()
