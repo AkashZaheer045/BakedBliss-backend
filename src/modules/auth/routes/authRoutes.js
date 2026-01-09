@@ -36,13 +36,9 @@ const routes = function () {
     //------------------------------------//
 
     // Sign-up / Register
-    router
-        .route('/register')
-        .post(registrationLimiter, authRules.rule('register'), Validation.validate, signUpUser);
+    router.route('/register').post(registrationLimiter, authRules.rule('register'), Validation.validate, signUpUser);
 
-    router
-        .route('/signup')
-        .post(registrationLimiter, authRules.rule('signup'), Validation.validate, signUpUser);
+    router.route('/signup').post(registrationLimiter, authRules.rule('signup'), Validation.validate, signUpUser);
 
     // Sign-in / Login (direct - no OTP)
     router.route('/login').post(authLimiter, authRules.rule('login'), Validation.validate, signInUser);
@@ -62,13 +58,9 @@ const routes = function () {
     router.route('/social-login').post(socialLogin);
 
     // Password reset flow
-    router
-        .route('/forgot-password')
-        .post(passwordResetLimiter, authRules.rule('forgotPassword'), Validation.validate, forgotPassword);
+    router.route('/forgot-password').post(passwordResetLimiter, authRules.rule('forgotPassword'), Validation.validate, forgotPassword);
 
-    router
-        .route('/reset-password')
-        .post(passwordResetLimiter, authRules.rule('resetPassword'), Validation.validate, resetPassword);
+    router.route('/reset-password').post(passwordResetLimiter, authRules.rule('resetPassword'), Validation.validate, resetPassword);
 
     // Token refresh (public - uses refresh token for auth)
     router.route('/refresh-token').post(authRules.rule('refreshToken'), Validation.validate, refreshToken);

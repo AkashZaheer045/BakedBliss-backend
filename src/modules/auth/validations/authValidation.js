@@ -48,6 +48,8 @@ ValidationRules.rule = method => {
 
                 body('phoneNumber')
                     .optional()
+                    .isLength({ min: 11, max: 14 })
+                    .withMessage('Phone number must be between 11 and 14 digits')
                     .custom(validatePhone)
                     .withMessage('Please provide a valid phone number')
             ];
