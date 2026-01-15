@@ -17,8 +17,19 @@ const {
     listFavorites
 } = require('../controllers/favoritesController');
 
+const { getUserProfile, updateUserProfile } = require('../controllers/userProfileController');
+
 const routes = function () {
     const router = express.Router({ mergeParams: true });
+
+    //------------------------------------//
+    // PROFILE ROUTES (auth handled centrally)
+    //------------------------------------//
+
+    router
+        .route('/profile/:user_id')
+        .get(getUserProfile)
+        .put(userRules.rule('updateProfile'), Validation.validate, updateUserProfile);
 
     //------------------------------------//
     // FAVORITES ROUTES (auth handled centrally)

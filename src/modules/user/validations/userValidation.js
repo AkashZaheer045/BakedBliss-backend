@@ -48,18 +48,22 @@ ValidationRules.rule = method => {
 
         case 'updateProfile': {
             return [
-                body('name')
+                param('user_id')
+                    .exists()
+                    .withMessage('User ID is required')
+                    .isString()
+                    .withMessage('Invalid user ID format'),
+
+                body('fullName')
                     .optional()
                     .trim()
                     .isLength({ min: 2, max: 100 })
                     .withMessage('Name must be between 2 and 100 characters'),
 
-                body('email').optional().isEmail().withMessage('Invalid email format'),
-
-                body('phone')
+                body('phoneNumber')
                     .optional()
                     .matches(/^\+?\d{10,15}$/)
-                    .withMessage('Invalid phone number')
+                    .withMessage('Invalid phone number format')
             ];
         }
 

@@ -222,7 +222,8 @@ const signInWithOTP = async (email, password) => {
             return [null, findErr];
         }
         if (!user) {
-            return [null, { message: 'User does not exist', status: 400 }];
+            // Generic error for security - don't reveal whether email exists
+            return [null, { message: 'Invalid email or password', status: 401 }];
         }
 
         if (user.is_active === false) {
@@ -235,7 +236,8 @@ const signInWithOTP = async (email, password) => {
 
         const isValid = verifyPassword(password, user.password, user.salt);
         if (!isValid) {
-            return [null, { message: 'Invalid password', status: 401 }];
+            // Generic error for security - don't reveal whether email exists
+            return [null, { message: 'Invalid email or password', status: 401 }];
         }
 
         // Generate and send OTP
@@ -275,7 +277,8 @@ const signIn = async (email, password) => {
             return [null, findErr];
         }
         if (!user) {
-            return [null, { message: 'User does not exist', status: 400 }];
+            // Generic error for security - don't reveal whether email exists
+            return [null, { message: 'Invalid email or password', status: 401 }];
         }
 
         if (user.is_active === false) {
@@ -288,7 +291,8 @@ const signIn = async (email, password) => {
 
         const isValid = verifyPassword(password, user.password, user.salt);
         if (!isValid) {
-            return [null, { message: 'Invalid password', status: 401 }];
+            // Generic error for security - don't reveal whether email exists
+            return [null, { message: 'Invalid email or password', status: 401 }];
         }
 
         // Generate tokens
