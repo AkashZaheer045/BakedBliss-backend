@@ -19,7 +19,13 @@ const validatePassword = password => {
 const PASSWORD_ERROR_MESSAGE =
     'Password must be at least 8 characters with uppercase, lowercase, number, and special character';
 
-const validatePhone = phone => /^\+?\d{10,15}$/.test(phone);
+const validatePhone = phone => {
+    // Must be 10-15 digits, optionally starting with + and country code
+    // Strips spaces and dashes before validation
+    const cleaned = phone.replace(/[\s-]/g, '');
+    // Require proper format: +country code followed by 10-14 digits OR just 10-14 digits
+    return /^(\+\d{1,3})?\d{10,14}$/.test(cleaned);
+};
 
 ValidationRules.rule = method => {
     switch (method) {
