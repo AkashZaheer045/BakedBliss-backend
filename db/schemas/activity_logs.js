@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
         'activity_logs',
         {
             id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
-            user_id: { type: DataTypes.STRING(128), allowNull: true },
+            user_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true }, // References users.id
             action: { type: DataTypes.STRING, allowNull: false },
             details: { type: DataTypes.JSON, allowNull: true },
             created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW }

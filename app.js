@@ -16,6 +16,7 @@ const { requestLogger } = require('./middleware/request_logger');
 const authMiddleware = require('./middleware/auth');
 const { errorHandler } = require('./middleware/response_handler');
 const { apiLimiter } = require('./middleware/rate_limiter');
+// const { activityLogger } = require('./middleware/activity_logger');
 
 //------------------------------------//
 // CORS Configuration
@@ -146,6 +147,12 @@ app.use(function (req, res, next) {
 // Public paths are defined in middleware/auth.js
 //------------------------------------//
 app.use(authMiddleware);
+
+//------------------------------------//
+// ACTIVITY LOGGING MIDDLEWARE
+// Logs all user activities to activity_logs table
+//------------------------------------//
+// app.use(activityLogger);
 
 //------------------------------------//
 // MODULE ROUTES
