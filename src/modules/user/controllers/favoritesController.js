@@ -7,10 +7,10 @@ const UserService = require('../services/userService');
 // Add product to user's favorites
 const addFavorite = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const userId = parseInt(req.params.id, 10);
         const { productId } = req.body;
 
-        if (!req.user || req.user.user_id !== user_id) {
+        if (!req.user || req.user.id !== userId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 
@@ -18,7 +18,7 @@ const addFavorite = async (req, res) => {
             return res.status(400).json({ status: 'error', message: 'productId is required' });
         }
 
-        const [result, error] = await UserService.addFavorite(user_id, productId);
+        const [result, error] = await UserService.addFavorite(userId, productId);
 
         if (error) {
             console.error('addFavorite error:', error);
@@ -49,13 +49,14 @@ const addFavorite = async (req, res) => {
 // Remove product from favorites
 const removeFavorite = async (req, res) => {
     try {
-        const { user_id, product_id } = req.params;
+        const userId = parseInt(req.params.id, 10);
+        const productId = parseInt(req.params.product_id, 10);
 
-        if (!req.user || req.user.user_id !== user_id) {
+        if (!req.user || req.user.id !== userId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 
-        const [_success, error] = await UserService.removeFavorite(user_id, product_id);
+        const [_success, error] = await UserService.removeFavorite(userId, productId);
 
         if (error) {
             console.error('removeFavorite error:', error);
@@ -74,13 +75,13 @@ const removeFavorite = async (req, res) => {
 // List user's favorites
 const listFavorites = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const userId = parseInt(req.params.id, 10);
 
-        if (!req.user || req.user.user_id !== user_id) {
+        if (!req.user || req.user.id !== userId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 
-        const [favorites, error] = await UserService.listFavorites(user_id);
+        const [favorites, error] = await UserService.listFavorites(userId);
 
         if (error) {
             console.error('listFavorites error:', error);

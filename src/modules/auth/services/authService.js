@@ -63,19 +63,10 @@ const generateTokens = (userId, email) => {
 };
 
 /**
- * Generate unique user ID
- */
-const generateUserId = () => {
-    const timestamp = Date.now().toString();
-    const randomPart = Math.random().toString(36).substring(2, 8);
-    return `user_${timestamp}_${randomPart}`;
-};
-
-/**
  * Format user response object
  */
 const formatUserResponse = user => ({
-    userId: user.user_id,
+    id: user.id,
     fullName: user.full_name,
     role: user.role,
     email: user.email,
@@ -83,8 +74,7 @@ const formatUserResponse = user => ({
     addresses: user.addresses,
     phoneNumber: user.phone_number,
     dateJoined: user.date_joined,
-    selectedAddressId: user.selected_address_id,
-    pushToken: user.push_token
+    selectedAddressId: user.selected_address_id
 });
 
 /**
@@ -104,12 +94,12 @@ const findUserByEmail = async email => {
 };
 
 /**
- * Find user by user_id
+ * Find user by id (integer primary key)
  */
 const findUserById = async userId => {
     try {
         const userInstance = new db(models.users);
-        const [user, err] = await userInstance.fetchOne({ user_id: userId });
+        const [user, err] = await userInstance.findByPk(userId);
         if (err) {
             return [null, err];
         }
@@ -160,11 +150,9 @@ const signUp = async ({
             return [null, { message: 'User already exists', status: 409 }];
         }
 
-        const userId = generateUserId();
         const { salt, hash } = hashPassword(password);
 
         const newUserData = {
-            user_id: userId,
             full_name: fullName,
             role: role || 'user',
             email: normalizedEmail,
@@ -182,8 +170,8 @@ const signUp = async ({
             return [null, createErr];
         }
 
-        // Generate tokens
-        const tokens = generateTokens(newUser.user_id, newUser.email);
+        // Generate tokens using integer id
+        const tokens = generateTokens(newUser.id, newUser.email);
 
         return [
             {
@@ -286,17 +274,16 @@ const signIn = async (email, password) => {
         }
 
         if (!user.password || !user.salt) {
-            return [null, { message: 'Please use social login for this account', status: 400 }];
+            return [null, { message: 'Invalid account configuration', status: 400 }];
         }
 
         const isValid = verifyPassword(password, user.password, user.salt);
         if (!isValid) {
-            // Generic error for security - don't reveal whether email exists
             return [null, { message: 'Invalid email or password', status: 401 }];
         }
 
-        // Generate tokens
-        const tokens = generateTokens(user.user_id, user.email);
+        // Generate tokens using integer id
+        const tokens = generateTokens(user.id, user.email);
 
         return [
             {
@@ -336,8 +323,8 @@ const verifyOTPAndLogin = async (email, otp) => {
             return [null, { message: 'Your account has been deactivated. Please contact support.', status: 403 }];
         }
 
-        // Generate tokens
-        const tokens = generateTokens(user.user_id, user.email);
+        // Generate tokens using integer id
+        const tokens = generateTokens(user.id, user.email);
 
         return [
             {
@@ -510,7 +497,7 @@ const refreshAccessToken = async refreshToken => {
         }
 
         // Generate new access token only
-        const accessToken = generateToken(user.user_id, user.email);
+        const accessToken = generateToken(user.id, user.email);
 
         return [
             {
@@ -573,86 +560,11 @@ const changePassword = async (userId, currentPassword, newPassword) => {
     }
 };
 
-/**
- * Social login
- */
-const socialLogin = async ({
-    userId,
-    fullName,
-    email,
-    profilePicture,
-    addresses,
-    selectedAddressId,
-    phoneNumber,
-    pushToken
-}) => {
-    try {
-        const [existingUser, findErr] = await findUserById(userId);
-        if (findErr) {
-            return [null, findErr];
-        }
-
-        if (existingUser) {
-            if (existingUser.is_active === false) {
-                return [null, { message: 'Your account has been deactivated. Please contact support.', status: 403 }];
-            }
-
-            if (pushToken && pushToken.trim() !== '') {
-                existingUser.push_token = pushToken;
-                await existingUser.save();
-            }
-
-            const tokens = generateTokens(existingUser.user_id, existingUser.email);
-
-            return [
-                {
-                    user: formatUserResponse(existingUser),
-                    ...tokens,
-                    isNew: false
-                },
-                null
-            ];
-        }
-
-        // Create new user
-        const newUserData = {
-            user_id: userId,
-            full_name: fullName,
-            email: email ? email.toLowerCase() : null,
-            profile_picture: profilePicture || null,
-            addresses: addresses || [],
-            phone_number: phoneNumber || null,
-            date_joined: new Date(),
-            push_token: pushToken || null,
-            selected_address_id: selectedAddressId || null
-        };
-
-        const [newUser, createErr] = await createUser(newUserData);
-        if (createErr) {
-            return [null, createErr];
-        }
-
-        const tokens = generateTokens(newUser.user_id, newUser.email);
-
-        return [
-            {
-                user: formatUserResponse(newUser),
-                ...tokens,
-                isNew: true
-            },
-            null
-        ];
-    } catch (error) {
-        return [null, error];
-    }
-};
-
 module.exports = {
     // User management
     signUp,
     signIn,
     signInWithOTP,
-    socialLogin,
 
     // OTP flow
     verifyOTPAndLogin,

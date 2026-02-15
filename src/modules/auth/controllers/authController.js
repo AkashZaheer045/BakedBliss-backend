@@ -281,50 +281,7 @@ const changePassword = async (req, res) => {
  * POST /auth/google-login
  * Social login with Google
  */
-const socialLogin = async (req, res) => {
-    try {
-        const { userId, fullName, email, profilePicture, addresses, selectedAddressId, phoneNumber, pushToken } =
-            req.body;
 
-        if (!userId || !fullName) {
-            return sendError(res, { status: 400, message: 'userId and fullName are required' });
-        }
-
-        const [result, error] = await AuthService.socialLogin({
-            userId,
-            fullName,
-            email,
-            profilePicture,
-            addresses,
-            selectedAddressId,
-            phoneNumber,
-            pushToken
-        });
-
-        if (error) {
-            console.error('[Auth] Social login error:', error.message);
-            return sendError(res, error, 'An error occurred during social login');
-        }
-
-        const statusCode = result.isNew ? 201 : 200;
-        const message = result.isNew ? 'Account created successfully' : 'Login successful';
-
-        return sendSuccess(
-            res,
-            {
-                user: result.user,
-                accessToken: result.accessToken,
-                refreshToken: result.refreshToken,
-                isNew: result.isNew
-            },
-            message,
-            statusCode
-        );
-    } catch (error) {
-        console.error('[Auth] Social login exception:', error);
-        return sendError(res, { status: 500, message: 'An error occurred during social login' });
-    }
-};
 
 /**
  * POST /auth/logout
@@ -346,6 +303,5 @@ module.exports = {
     resetPassword,
     refreshToken,
     changePassword,
-    socialLogin,
     logout
 };

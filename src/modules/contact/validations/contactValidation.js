@@ -10,7 +10,7 @@ ValidationRules.rule = method => {
     switch (method) {
         case 'submit': {
             return [
-                body('name')
+                body('fullName')
                     .trim()
                     .notEmpty()
                     .withMessage('Name is required')

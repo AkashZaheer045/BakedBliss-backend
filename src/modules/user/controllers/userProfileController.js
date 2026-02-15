@@ -7,7 +7,7 @@ const UserService = require('../services/userService');
 // Get user profile
 const getUserProfile = async (req, res) => {
     try {
-        const userId = req.params.user_id;
+        const userId = parseInt(req.params.id, 10);
 
         const [profile, error] = await UserService.getUserProfile(userId);
 
@@ -32,11 +32,11 @@ const getUserProfile = async (req, res) => {
 // Update user profile
 const updateUserProfile = async (req, res) => {
     try {
-        const userId = req.params.user_id;
+        const userId = parseInt(req.params.id, 10);
         const { fullName, phoneNumber, profilePicture } = req.body;
 
         // Ensure authenticated user matches path user
-        if (!req.user || req.user.user_id !== userId) {
+        if (!req.user || req.user.id !== userId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 

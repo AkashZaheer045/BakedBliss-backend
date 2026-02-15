@@ -7,36 +7,36 @@ module.exports = function (db) {
     // User <-> Orders Association
     db.users.hasMany(db.orders, {
         foreignKey: 'user_id',
-        sourceKey: 'user_id',
+        sourceKey: 'id',
         as: 'orders'
     });
     db.orders.belongsTo(db.users, {
         foreignKey: 'user_id',
-        targetKey: 'user_id',
+        targetKey: 'id',
         as: 'user'
     });
 
     // User <-> Cart Association (One-to-One)
     db.users.hasOne(db.carts, {
         foreignKey: 'user_id',
-        sourceKey: 'user_id',
+        sourceKey: 'id',
         as: 'cart'
     });
     db.carts.belongsTo(db.users, {
         foreignKey: 'user_id',
-        targetKey: 'user_id',
+        targetKey: 'id',
         as: 'user'
     });
 
     // User <-> Favorites Association
     db.users.hasMany(db.favorites, {
         foreignKey: 'user_id',
-        sourceKey: 'user_id',
+        sourceKey: 'id',
         as: 'favorites'
     });
     db.favorites.belongsTo(db.users, {
         foreignKey: 'user_id',
-        targetKey: 'user_id',
+        targetKey: 'id',
         as: 'user'
     });
 

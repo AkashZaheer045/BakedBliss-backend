@@ -23,8 +23,7 @@ const allowedPaths = [
     '/api/v1/auth/resend-otp',
     '/api/v1/auth/forgot-password',
     '/api/v1/auth/reset-password',
-    '/api/v1/auth/google-login',
-    '/api/v1/auth/social-login',
+    '/api/v1/auth/reset-password',
     '/api/v1/auth/refresh-token',
     '/api/v1/auth/logout',
 
@@ -105,13 +104,12 @@ module.exports = async function (req, res, next) {
         const decoded = jwt.verify(token, jwtSecretKey);
 
         // Debug: log decoded token
-        console.log('[Auth] Decoded token:', { uid: decoded.uid, id: decoded.id, user_id: decoded.user_id });
+        console.log('[Auth] Decoded token:', { uid: decoded.uid, id: decoded.id });
 
-        // Get user from database - token uses 'uid' field which contains user_id string
-        const userId = decoded.uid || decoded.id || decoded.user_id;
+        // Get user from database - token uses 'uid' field which contains user id (integer)
+        const userId = decoded.uid || decoded.id;
 
-        const user = await sequelize.models.users.findOne({
-            where: { user_id: userId },
+        const user = await sequelize.models.users.findByPk(userId, {
             attributes: { exclude: ['password', 'deleted_at'] }
         });
 
@@ -133,7 +131,7 @@ module.exports = async function (req, res, next) {
             });
         }
 
-        // Attach user to request
+        // Attach user to request - user.id is the integer primary key
         req.user = user;
         req.userId = user.id;
 

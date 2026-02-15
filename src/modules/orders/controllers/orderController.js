@@ -7,7 +7,7 @@ const OrderService = require('../services/orderService');
 // Confirm and place an order
 const confirmOrder = async (req, res) => {
     try {
-        const userId = req.user.user_id;
+        const userId = req.user.id;
         const { cart_items, delivery_address, total_amount } = req.body;
 
         if (!cart_items || !Array.isArray(cart_items) || cart_items.length === 0) {
@@ -48,7 +48,7 @@ const confirmOrder = async (req, res) => {
 // View order history
 const viewOrderHistory = async (req, res) => {
     try {
-        const userId = req.user.user_id;
+        const userId = req.user.id;
 
         const [orders, error] = await OrderService.getOrderHistory(userId);
 

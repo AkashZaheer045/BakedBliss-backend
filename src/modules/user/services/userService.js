@@ -5,12 +5,12 @@
 const { models, db } = require('../../../../db/sequelize/sequelize');
 
 /**
- * Get user profile
+ * Get user profile by id (integer)
  */
 const getUserProfile = async userId => {
     try {
         const userInstance = new db(models.users);
-        const [user, err] = await userInstance.fetchOne({ user_id: userId });
+        const [user, err] = await userInstance.findByPk(userId);
         if (err) {
             return [null, err];
         }
@@ -20,7 +20,7 @@ const getUserProfile = async userId => {
 
         return [
             {
-                userId: user.user_id,
+                id: user.id,
                 fullName: user.full_name,
                 email: user.email,
                 phoneNo: user.phone_number,
@@ -36,12 +36,12 @@ const getUserProfile = async userId => {
 };
 
 /**
- * Update user profile
+ * Update user profile by id (integer)
  */
 const updateUserProfile = async (userId, updateData) => {
     try {
         const userInstance = new db(models.users);
-        const [user, findErr] = await userInstance.fetchOne({ user_id: userId });
+        const [user, findErr] = await userInstance.findByPk(userId);
         if (findErr) {
             return [null, findErr];
         }
@@ -64,7 +64,7 @@ const updateUserProfile = async (userId, updateData) => {
 
         return [
             {
-                userId: user.user_id,
+                id: user.id,
                 fullName: user.full_name,
                 email: user.email,
                 phoneNo: user.phone_number,

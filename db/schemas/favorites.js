@@ -3,7 +3,11 @@ module.exports = (sequelize, DataTypes) => {
         'favorites',
         {
             id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
-            user_id: { type: DataTypes.STRING(128), allowNull: false },
+            user_id: {
+                type: DataTypes.INTEGER.UNSIGNED,
+                allowNull: false,
+                references: { model: 'users', key: 'id' }
+            },
             product_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
             created_at: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
             updated_at: { type: DataTypes.DATE, allowNull: true },

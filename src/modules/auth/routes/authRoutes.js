@@ -22,7 +22,6 @@ const {
     resetPassword,
     refreshToken,
     changePassword,
-    socialLogin,
     logout
 } = require('../controllers/authController');
 
@@ -52,10 +51,7 @@ const routes = function () {
     // Resend OTP
     router.route('/resend-otp').post(otpLimiter, authRules.rule('resendOtp'), Validation.validate, resendOTP);
 
-    // Social login (Google, Facebook, etc.)
-    router.route('/google-login').post(authRules.rule('googleLogin'), Validation.validate, socialLogin);
 
-    router.route('/social-login').post(socialLogin);
 
     // Password reset flow
     router.route('/forgot-password').post(passwordResetLimiter, authRules.rule('forgotPassword'), Validation.validate, forgotPassword);

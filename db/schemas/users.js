@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
         'users',
         {
             id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
-            user_id: { type: DataTypes.STRING(128), allowNull: false, unique: true },
+            // user_id column removed
             full_name: { type: DataTypes.STRING(255), allowNull: false },
             email: { type: DataTypes.STRING(255), allowNull: true, unique: true },
             profile_picture: { type: DataTypes.STRING(1024), allowNull: true },

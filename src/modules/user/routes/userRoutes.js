@@ -1,11 +1,3 @@
-/**
- * User Routes
- * Per QAutos pattern:
- * - No route-level authentication (handled centrally in app.js)
- * - Validation rules via ValidationRules.rule('methodName')
- * - Centralized Validation.validate middleware
- * - Clean routes: Only reference controllers, no inline logic
- */
 const express = require('express');
 const userRules = require('../validations/userValidation');
 const Validation = require('../../../../utils/validation');
@@ -27,7 +19,7 @@ const routes = function () {
     //------------------------------------//
 
     router
-        .route('/profile/:user_id')
+        .route('/profile/:id')
         .get(getUserProfile)
         .put(userRules.rule('updateProfile'), Validation.validate, updateUserProfile);
 
@@ -37,13 +29,13 @@ const routes = function () {
 
     // Add to favorites
     router
-        .route('/:user_id/favorites')
+        .route('/:id/favorites')
         .post(userRules.rule('addFavorite'), Validation.validate, addFavorite)
         .get(userRules.rule('listFavorites'), Validation.validate, listFavorites);
 
     // Remove from favorites
     router
-        .route('/:user_id/favorites/:product_id')
+        .route('/:id/favorites/:product_id')
         .delete(userRules.rule('removeFavorite'), Validation.validate, removeFavorite);
 
     return router;

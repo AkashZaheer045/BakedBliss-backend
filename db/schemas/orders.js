@@ -4,7 +4,11 @@ module.exports = (sequelize, DataTypes) => {
         {
             id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
             order_id: { type: DataTypes.STRING(128), allowNull: false, unique: true },
-            user_id: { type: DataTypes.STRING(128), allowNull: false },
+            user_id: {
+                type: DataTypes.INTEGER.UNSIGNED,
+                allowNull: false,
+                references: { model: 'users', key: 'id' }
+            },
             cart_items: { type: DataTypes.JSON, allowNull: false },
             delivery_address: { type: DataTypes.JSON, allowNull: true },
             status: { type: DataTypes.STRING(64), allowNull: false, defaultValue: 'Pending' },
