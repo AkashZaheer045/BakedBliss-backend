@@ -13,6 +13,8 @@
  */
 
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 // Create transporter using SMTP configuration
@@ -72,51 +74,55 @@ const sendEmail = async (to, subject, html, text = '') => {
  * @param {string} otp - 6-digit OTP code
  */
 const sendOTPEmail = async (email, otp) => {
-    const subject = 'Your Baked Bliss Verification Code';
-    const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f5f0;">
-            <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-                <div style="background-color: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                    <!-- Header -->
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #8B4513; margin: 0; font-size: 28px;">🧁 Baked Bliss</h1>
-                        <p style="color: #a0522d; margin-top: 8px;">Freshly Baked, Delivered Fresh</p>
-                    </div>
-                    
-                    <!-- Content -->
-                    <div style="text-align: center;">
-                        <h2 style="color: #333; margin-bottom: 10px;">Verification Code</h2>
-                        <p style="color: #666; margin-bottom: 30px;">Enter this code to verify your email address:</p>
-                        
-                        <div style="background: linear-gradient(135deg, #D2691E, #8B4513); border-radius: 12px; padding: 20px; display: inline-block;">
-                            <span style="color: white; font-size: 36px; font-weight: bold; letter-spacing: 8px;">${otp}</span>
+    try {
+        // Load OTP email template
+        const templatePath = path.join(__dirname, '../views/email/otp-email.html');
+        let html = fs.readFileSync(templatePath, 'utf-8');
+
+        // Replace OTP placeholder
+        html = html.replace('{{OTP_CODE}}', otp);
+
+        const subject = 'Your Baked Bliss Verification Code';
+        const text = `Your Baked Bliss verification code is: ${otp}\n\nThis code expires in 2 minutes.\n\nIf you didn't request this code, please ignore this email.`;
+
+        return sendEmail(email, subject, html, text);
+    } catch (error) {
+        console.error(`❌ Failed to load OTP template:`, error.message);
+        // Fallback to inline template
+        const subject = 'Your Baked Bliss Verification Code';
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f5f0;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+                    <div style="background-color: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="color: #8B4513; margin: 0; font-size: 28px;">🧁 Baked Bliss</h1>
+                            <p style="color: #a0522d; margin-top: 8px;">Freshly Baked, Delivered Fresh</p>
                         </div>
-                        
-                        <p style="color: #999; margin-top: 30px; font-size: 14px;">
-                            ⏱️ This code expires in <strong>2 minutes</strong>
-                        </p>
+                        <div style="text-align: center;">
+                            <h2 style="color: #333; margin-bottom: 10px;">Verification Code</h2>
+                            <p style="color: #666; margin-bottom: 30px;">Enter this code to verify your email address:</p>
+                            <div style="background: linear-gradient(135deg, #D2691E, #8B4513); border-radius: 12px; padding: 20px; display: inline-block;">
+                                <span style="color: white; font-size: 36px; font-weight: bold; letter-spacing: 8px;">${otp}</span>
+                            </div>
+                            <p style="color: #999; margin-top: 30px; font-size: 14px;">⏱️ This code expires in <strong>2 minutes</strong></p>
+                        </div>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+                        <p style="color: #999; font-size: 12px; text-align: center;">If you didn't request this code, you can safely ignore this email.</p>
                     </div>
-                    
-                    <!-- Footer -->
-                    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-                    <p style="color: #999; font-size: 12px; text-align: center;">
-                        If you didn't request this code, you can safely ignore this email.
-                    </p>
                 </div>
-            </div>
-        </body>
-        </html>
-    `;
+            </body>
+            </html>
+        `;
+        const text = `Your Baked Bliss verification code is: ${otp}\n\nThis code expires in 2 minutes.\n\nIf you didn't request this code, please ignore this email.`;
 
-    const text = `Your Baked Bliss verification code is: ${otp}\n\nThis code expires in 2 minutes.\n\nIf you didn't request this code, please ignore this email.`;
-
-    return sendEmail(email, subject, html, text);
+        return sendEmail(email, subject, html, text);
+    }
 };
 
 /**

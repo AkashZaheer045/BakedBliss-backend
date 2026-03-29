@@ -37,7 +37,7 @@
 ├── src/
 │   └── modules/
 │       └── <domain>/         # Vertical slices
-│           ├── app.js        # Module router
+│           ├── app.js        # Module routes
 │           ├── controllers/  # Request handlers
 │           ├── routes/       # Route definitions
 │           ├── services/     # Business logic
@@ -80,7 +80,7 @@ Use `async/await` everywhere. Never rely on unhandled promise rejections.
 ```javascript
 // Use the async handler wrapper
 const asyncHandler = require('../../middleware/async_handler');
-router.get('/products', asyncHandler(controller.getProducts));
+routes.get('/products', asyncHandler(controller.getProducts));
 ```
 
 ### Error Handling

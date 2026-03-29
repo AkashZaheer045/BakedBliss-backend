@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baked Bliss - Verification Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f5f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .email-wrapper {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #D2691E 0%, #8B4513 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        /* Body Section */
+        .body {
+            padding: 40px 30px;
+        }
+
+        .body h2 {
+            color: #333333;
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .body p {
+            color: #666666;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* OTP Code Display */
+        .otp-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .otp-box {
+            background: linear-gradient(135deg, #D2691E 0%, #8B4513 100%);
+            border-radius: 12px;
+            padding: 25px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .otp-code {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 6px;
+            font-family: 'Courier New', monospace;
+            user-select: all;
+        }
+
+        /* Expiry Information */
+        .expiry-info {
+            background-color: #fff8f0;
+            border-left: 4px solid #D2691E;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        .expiry-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #8B4513;
+        }
+
+        .expiry-info strong {
+            font-weight: 600;
+            color: #6B3410;
+        }
+
+        /* Security Notice */
+        .security-notice {
+            background-color: #f0f8ff;
+            border-left: 4px solid #1E90FF;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        .security-notice h3 {
+            color: #1E90FF;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .security-notice p {
+            margin: 0;
+            font-size: 13px;
+            color: #333333;
+            line-height: 1.5;
+        }
+
+        .security-notice ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+            font-size: 13px;
+            color: #333333;
+        }
+
+        .security-notice li {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #D2691E;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+
+        .button:hover {
+            background-color: #8B4513;
+        }
+
+        .button.secondary {
+            background-color: transparent;
+            border: 2px solid #D2691E;
+            color: #D2691E;
+        }
+
+        .button.secondary:hover {
+            background-color: #f9f5f0;
+        }
+
+        /* Support Section */
+        .support-section {
+            background-color: #f5f5f5;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .support-section p {
+            margin: 8px 0;
+            font-size: 13px;
+            color: #666666;
+        }
+
+        .support-section a {
+            color: #D2691E;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .support-section a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            color: #cccccc;
+        }
+
+        .footer a {
+            color: #D2691E;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #444444;
+        }
+
+        .footer-links a {
+            margin: 0 10px;
+            font-size: 11px;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #eeeeee;
+            margin: 25px 0;
+        }
+
+        /* Responsive Styles */
+        @media only screen and (max-width: 600px) {
+            .email-wrapper {
+                border-radius: 8px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .body {
+                padding: 25px 20px;
+            }
+
+            .body h2 {
+                font-size: 20px;
+            }
+
+            .body p {
+                font-size: 14px;
+            }
+
+            .otp-code {
+                font-size: 32px;
+                letter-spacing: 4px;
+            }
+
+            .otp-box {
+                padding: 20px;
+            }
+
+            .button {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            .support-section {
+                margin-top: 20px;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="email-wrapper">
+            <!-- Header -->
+            <div class="header">
+                <h1>🧁 Baked Bliss</h1>
+                <p>Freshly Baked, Delivered Fresh</p>
+            </div>
+
+            <!-- Body -->
+            <div class="body">
+                <!-- Welcome Message -->
+                <h2>Verify Your Email</h2>
+                <p>Hello! We've received a request to verify your email address. Please use the verification code below to complete your login.</p>
+
+                <!-- OTP Code -->
+                <div class="otp-container">
+                    <p style="color: #333; font-size: 14px; margin-bottom: 10px;">Your Verification Code:</p>
+                    <div class="otp-box">
+                        <div class="otp-code">{{OTP_CODE}}</div>
+                    </div>
+                    <p style="color: #999; font-size: 13px;">Enter this code in the app or website</p>
+                </div>
+
+                <!-- Expiry Information -->
+                <div class="expiry-info">
+                    <p><strong>⏱️ Expires in 2 minutes</strong></p>
+                    <p>This code will expire soon. Please enter it quickly.</p>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider"></div>
+
+                <!-- Security Notice -->
+                <div class="security-notice">
+                    <h3>🔒 Security Notice</h3>
+                    <p><strong>Never share this code with anyone.</strong> Baked Bliss staff will never ask for your verification code.</p>
+                    <ul>
+                        <li>This code is only valid for 2 minutes</li>
+                        <li>Only use it if you initiated this request</li>
+                        <li>Delete this email once you've entered the code</li>
+                        <li>If you didn't request this, ignore this email</li>
+                    </ul>
+                </div>
+
+                <!-- Didn't Request This? -->
+                <div class="divider"></div>
+
+                <p style="text-align: center; color: #999; font-size: 13px;">
+                    Didn't request this code? No action is needed. Your account is secure unless someone has access to your email.
+                </p>
+
+                <!-- Support Section -->
+                <div class="support-section">
+                    <p><strong>Need help?</strong></p>
+                    <p>If you're having trouble, our support team is here to help.</p>
+                    <p><a href="mailto:support@bakedbliss.com">Contact Support</a> | <a href="https://bakedbliss.com/help">Help Center</a></p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p style="margin: 0 0 10px 0;"><strong>Baked Bliss Co.</strong></p>
+                <p>Premium Baked Goods Delivered to Your Door</p>
+
+                <div class="footer-links">
+                    <a href="https://bakedbliss.com">Website</a>
+                    <a href="https://bakedbliss.com/privacy">Privacy</a>
+                    <a href="https://bakedbliss.com/terms">Terms</a>
+                    <a href="mailto:support@bakedbliss.com">Support</a>
+                </div>
+
+                <p style="margin-top: 15px; border-top: 1px solid #444; padding-top: 15px;">
+                    You received this email because you requested to log in to your Baked Bliss account.<br>
+                    This is a transactional email. Please do not reply directly.
+                </p>
+
+                <p style="margin-top: 10px;">
+                    © 2025 Baked Bliss Co. All rights reserved.<br>
+                    <a href="https://bakedbliss.com">www.bakedbliss.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

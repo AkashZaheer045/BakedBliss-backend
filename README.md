@@ -107,7 +107,7 @@ The system provides comprehensive functionality including user authentication, p
 ```
 
 ### Data Flow
-1. **Client Request** → Express.js Router
+1. **Client Request** → Express.js routes
 2. **Authentication** → JWT Verification Middleware
 3. **Routing** → Module-specific Routes
 4. **Business Logic** → Service Layer

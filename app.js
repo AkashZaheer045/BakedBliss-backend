@@ -1,9 +1,17 @@
-/**  Baked Bliss Backend - Main Application */
-const cors = require('cors');
+ const cors = require('cors');
 const morgan = require('morgan');
 const moment = require('moment');
 const express = require('express');
 const bodyParser = require('body-parser');
+// Middleware imports
+// const { requestLogger } = require('./middleware/request_logger');
+const authMiddleware = require('./middleware/auth');
+// const { apiLimiter } = require('./middleware/rate_limiter');
+const { activityLogger } = require('./middleware/activity_logger');
+
+
+
+
 
 require('dotenv').config();
 const app = express();
@@ -11,22 +19,25 @@ const app = express();
 // Trust the first proxy (Vercel/Heroku/AWS) - Required for correct IP resolution & rate limiting
 app.set('trust proxy', 1);
 
-// Middleware imports
-const { requestLogger } = require('./middleware/request_logger');
-const authMiddleware = require('./middleware/auth');
-const { errorHandler } = require('./middleware/response_handler');
-const { apiLimiter } = require('./middleware/rate_limiter');
-// const { activityLogger } = require('./middleware/activity_logger');
-
 //------------------------------------//
 // CORS Configuration
 //------------------------------------//
-app.use(cors({ optionsSuccessStatus: 200 }));
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  methods: process.env.CORS_METHODS.split(","),
+  credentials: process.env.CORS_CREDENTIALS === "true",
+  optionsSuccessStatus: 200
+}));
 
+app.options("*", cors());
+app.use(function (req, res, next) {
+    console.log("======> req.originalUrl Before express limit: ", req.originalUrl);
+    next();
+});
 //------------------------------------//
 // Body Parsing
 //------------------------------------//
-app.use(express.json({ limit: '30mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //------------------------------------//
@@ -38,7 +49,7 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 // Global Rate Limiting
 // 100 requests per 15 minutes per IP
 //------------------------------------//
-app.use(apiLimiter);
+// app.use(apiLimiter);
 
 //------------------------------------//
 // Console Logging with Timestamp
@@ -50,16 +61,6 @@ console_stamp(console, {
         return moment().format('YYYY-MM-DD HH:mm:ss');
     }
 });
-
-//------------------------------------//
-// HTTP Method Validation
-//------------------------------------//
-const allowedMethods = (req, res, next) => {
-    req.req_start_time = new Date().toISOString();
-    const allowed = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
-    return allowed.includes(req.method) ? next() : next(405);
-};
-app.use(allowedMethods);
 
 //------------------------------------//
 // Morgan Request Logging
@@ -80,66 +81,19 @@ app.use(morgan('[:date] [:method] :url :status :res[content-length] - :response-
 //------------------------------------//
 // Health Check Endpoints (before auth)
 //------------------------------------//
-app.post('/user/health', function (req, res) {
+app.post('/health', function (req, res) {
     console.log('health is fine');
     res.json(new Date());
 });
 
-app.get('/health', function (req, res) {
-    res.status(200).json({ status: 'OK', timestamp: new Date() });
-});
 
-app.get('/', function (req, res) {
-    res.status(200).json({ status: 'OK', message: 'Baked Bliss Backend is running', timestamp: new Date() });
-});
 
 //------------------------------------//
 // ENDPOINT REGISTRY
 // Per QAutos pattern: Register all valid endpoints upfront
 // This enables validation before hitting auth
 //------------------------------------//
-const _endPoints = {
-    auth: [
-        'login',
-        'register',
-        'signup',
-        'verify-otp',
-        'resend-otp',
-        'forgot-password',
-        'reset-password',
-        'google-login',
-        'logout',
-        'refresh-token',
-        'change-password'
-    ],
-    products: [
-        'search',
-        'categories',
-        'trending',
-        'upload',
-        'category'
-        // Note: Dynamic routes like /:id are handled separately
-    ],
-    cart: ['add', 'remove', 'update', 'clear', 'items'],
-    order: ['create', 'history', 'details', 'cancel', 'status'],
-    address: ['add', 'update', 'delete', 'list', 'default'],
-    users: ['profile', 'update-profile', 'favorites', 'add-favorite', 'remove-favorite'],
-    contact: ['submit', 'list'],
-    admin: ['dashboard', 'users', 'orders', 'products']
-};
-
-//------------------------------------//
-// Request Logger with Trace ID
-//------------------------------------//
-app.use(requestLogger);
-
-//------------------------------------//
-// Request URL Logger
-//------------------------------------//
-app.use(function (req, res, next) {
-    console.log('======> req.originalUrl:', req.originalUrl);
-    next();
-});
+// Endpoint registry removed — CORS and centralized routing are used instead
 
 //------------------------------------//
 // CENTRALIZED AUTHENTICATION MIDDLEWARE
@@ -149,10 +103,9 @@ app.use(function (req, res, next) {
 app.use(authMiddleware);
 
 //------------------------------------//
-// ACTIVITY LOGGING MIDDLEWARE
 // Logs all user activities to activity_logs table
 //------------------------------------//
-// app.use(activityLogger);
+app.use(activityLogger);
 
 //------------------------------------//
 // MODULE ROUTES
@@ -194,6 +147,7 @@ app.use((req, res, _next) => {
 //------------------------------------//
 // Centralized Error Handler
 //------------------------------------//
+const { errorHandler } = require('./middleware/response_handler');
 app.use(errorHandler);
 
 //------------------------------------//
