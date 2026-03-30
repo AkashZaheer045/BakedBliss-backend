@@ -11,7 +11,7 @@ module.exports = {
             phone_number: { type: Sequelize.STRING(64), allowNull: true },
             addresses: { type: Sequelize.JSON, allowNull: true },
             selected_address_id: { type: Sequelize.STRING(128), allowNull: true },
-            role: { type: Sequelize.STRING(64), allowNull: false, defaultValue: 'user' },
+            role: { type: Sequelize.ENUM('user', 'admin'), allowNull: false, defaultValue: 'user' },
             push_token: { type: Sequelize.STRING(512), allowNull: true },
             date_joined: { type: Sequelize.DATE, allowNull: true },
             created_at: {

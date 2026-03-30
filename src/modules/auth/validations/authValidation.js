@@ -57,7 +57,16 @@ ValidationRules.rule = method => {
                     .isLength({ min: 11, max: 14 })
                     .withMessage('Phone number must be between 11 and 14 digits')
                     .custom(validatePhone)
-                    .withMessage('Please provide a valid phone number')
+                    .withMessage('Please provide a valid phone number'),
+
+                body('role')
+                    .optional()
+                    .custom(value => {
+                        if (value !== 'user') {
+                            throw new Error('Invalid role assignment');
+                        }
+                        return true;
+                    })
             ];
         }
 

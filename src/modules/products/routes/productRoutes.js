@@ -56,6 +56,9 @@ const routes = function () {
     router.route('/upload').post(productRules.rule('create'), Validation.validate, createProduct);
 
     // User-specific recommendations
+    router.route('/recommendations').get(getRecommendations);
+
+    // Backward-compatible recommendations route (path userId is ignored unless it matches token user)
     router.route('/recommendations/:userId').get(getRecommendations);
 
     // Update product

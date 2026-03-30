@@ -10,7 +10,7 @@ const { models, db } = require('../../../../db/sequelize/sequelize');
 const getAddresses = async userId => {
     try {
         const userInstance = new db(models.users);
-        const [user, err] = await userInstance.fetchOne({ user_id: userId });
+        const [user, err] = await userInstance.findByPk(userId);
         if (err) {
             return [null, err];
         }
@@ -30,7 +30,7 @@ const getAddresses = async userId => {
 const addAddress = async (userId, address) => {
     try {
         const userInstance = new db(models.users);
-        const [user, findErr] = await userInstance.fetchOne({ user_id: userId });
+        const [user, findErr] = await userInstance.findByPk(userId);
         if (findErr) {
             return [null, findErr];
         }
@@ -57,7 +57,7 @@ const addAddress = async (userId, address) => {
 const updateAddress = async (userId, addressId, updatedAddress) => {
     try {
         const userInstance = new db(models.users);
-        const [user, findErr] = await userInstance.fetchOne({ user_id: userId });
+        const [user, findErr] = await userInstance.findByPk(userId);
         if (findErr) {
             return [null, findErr];
         }
@@ -86,7 +86,7 @@ const updateAddress = async (userId, addressId, updatedAddress) => {
 const deleteAddress = async (userId, addressId) => {
     try {
         const userInstance = new db(models.users);
-        const [user, findErr] = await userInstance.fetchOne({ user_id: userId });
+        const [user, findErr] = await userInstance.findByPk(userId);
         if (findErr) {
             return [null, findErr];
         }

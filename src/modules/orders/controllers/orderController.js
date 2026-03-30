@@ -74,7 +74,13 @@ const viewOrderHistory = async (req, res) => {
 // Track order status
 const getOrderStatus = async (req, res) => {
     try {
+        const authenticatedUserId = req.user?.id;
+        const isAdmin = req.user?.role === 'admin';
         const { orderId } = req.params;
+
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
 
         const [order, error] = await OrderService.getOrderById(orderId);
 
@@ -84,6 +90,10 @@ const getOrderStatus = async (req, res) => {
                 status: 'error',
                 message: error.message || 'Failed to retrieve order status'
             });
+        }
+
+        if (!isAdmin && order.userId !== authenticatedUserId) {
+            return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
 
         res.status(200).json({
@@ -105,6 +115,10 @@ const getOrderStatus = async (req, res) => {
 // Get all orders (admin)
 const getAllOrders = async (req, res) => {
     try {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({ status: 'error', message: 'Admin access required' });
+        }
+
         const { status, page, limit } = req.query;
 
         const [result, error] = await OrderService.getAllOrders({ status, page, limit });
@@ -134,6 +148,10 @@ const getAllOrders = async (req, res) => {
 // Update order status (admin)
 const updateOrderStatus = async (req, res) => {
     try {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({ status: 'error', message: 'Admin access required' });
+        }
+
         const { order_id, status } = req.body;
 
         const [result, error] = await OrderService.updateOrderStatus(order_id, status);
@@ -164,8 +182,28 @@ const updateOrderStatus = async (req, res) => {
 // Cancel order
 const cancelOrder = async (req, res) => {
     try {
+        const authenticatedUserId = req.user?.id;
+        const isAdmin = req.user?.role === 'admin';
         const { orderId } = req.params;
         const { reason } = req.body || {};
+
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
+
+        const [order, findError] = await OrderService.getOrderById(orderId);
+
+        if (findError) {
+            return res.status(findError.status || 500).json({
+                status: 'error',
+                statusCode: findError.status || 500,
+                message: findError.message || 'Failed to cancel order'
+            });
+        }
+
+        if (!isAdmin && order.userId !== authenticatedUserId) {
+            return res.status(403).json({ status: 'error', message: 'Forbidden' });
+        }
 
         const [result, error] = await OrderService.cancelOrder(orderId, reason);
 
@@ -196,6 +234,10 @@ const cancelOrder = async (req, res) => {
 // Get order stats (admin)
 const getOrderStats = async (req, res) => {
     try {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({ status: 'error', message: 'Admin access required' });
+        }
+
         const [stats, error] = await OrderService.getOrderStats();
 
         if (error) {

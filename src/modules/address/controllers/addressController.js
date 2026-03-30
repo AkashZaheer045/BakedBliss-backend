@@ -7,8 +7,12 @@ const AddressService = require('../services/addressService');
 // Add a new address
 const addAddress = async (req, res) => {
     try {
-        const userId = req.user && (req.user.uid || req.user.userId);
+        const userId = req.user?.id;
         const address = req.body; // Use flattened body
+
+        if (!userId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
 
         // Validation already checked required fields
 
@@ -40,8 +44,12 @@ const addAddress = async (req, res) => {
 // Update an address
 const updateAddress = async (req, res) => {
     try {
-        const userId = req.user && (req.user.uid || req.user.userId);
+        const userId = req.user?.id;
         const { address_id, ...updatedAddress } = req.body; // Extract address_id (snake_case from validator)
+
+        if (!userId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
 
         if (!address_id) {
             return res
@@ -81,8 +89,12 @@ const updateAddress = async (req, res) => {
 // Delete an address
 const deleteAddress = async (req, res) => {
     try {
-        const userId = req.user && (req.user.uid || req.user.userId);
+        const userId = req.user?.id;
         const { address_id } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
 
         if (!address_id) {
             return res.status(400).json({ status: 'error', message: 'Address ID is required.' });
@@ -116,7 +128,11 @@ const deleteAddress = async (req, res) => {
 // View all addresses
 const viewAddresses = async (req, res) => {
     try {
-        const userId = req.user && (req.user.uid || req.user.userId);
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
 
         const [addresses, error] = await AddressService.getAddresses(userId);
 

@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
             phone_number: { type: DataTypes.STRING(64), allowNull: true },
             addresses: { type: DataTypes.JSON, allowNull: true },
             selected_address_id: { type: DataTypes.STRING(128), allowNull: true },
-            role: { type: DataTypes.STRING(64), allowNull: false, defaultValue: 'user' },
+            role: { type: DataTypes.ENUM('user', 'admin'), allowNull: false, defaultValue: 'user' },
             push_token: { type: DataTypes.STRING(512), allowNull: true },
             password: { type: DataTypes.STRING(1024), allowNull: true }, // Hashed password
             salt: { type: DataTypes.STRING(512), allowNull: true }, // Salt for hashing

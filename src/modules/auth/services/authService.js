@@ -135,8 +135,7 @@ const signUp = async ({
     profilePicture,
     addresses,
     selectedAddressId,
-    phoneNumber,
-    role
+    phoneNumber
 }) => {
     try {
         const normalizedEmail = email.toLowerCase();
@@ -154,7 +153,7 @@ const signUp = async ({
 
         const newUserData = {
             full_name: fullName,
-            role: role || 'user',
+            role: 'user',
             email: normalizedEmail,
             password: hash,
             salt: salt,

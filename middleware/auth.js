@@ -35,6 +35,8 @@ const allowedPaths = [
 
     // Contact - public
     '/api/v1/contact',
+    '/api/v1/contact/contact-us',
+    '/api/v1/contact/send',
     '/api/v1/contact/submit',
 
     // Health check
@@ -45,26 +47,37 @@ const allowedPaths = [
 /**
  * Path prefixes that are public (for dynamic routes like /products/:id)
  */
-const allowedPrefixes = [
-    '/api/v1/products/category/',
-    '/api/v1/products/' // For product details by ID
-];
+const allowedPrefixes = ['/api/v1/products/category/', '/api/v1/products/'];
 
 /**
  * Check if path matches any allowed path or prefix
  */
-const isPublicPath = path => {
+const isPublicPath = (path, method = 'GET') => {
     // Check exact matches
     if (allowedPaths.includes(path)) {
         return true;
     }
 
+    // Dynamic public product paths are read-only
+    if (method !== 'GET') {
+        return false;
+    }
+
     // Check prefix matches (for dynamic routes)
     for (const prefix of allowedPrefixes) {
         if (path.startsWith(prefix)) {
-            // For product details, only allow GET requests
-            // Additional logic can be added here
-            return true;
+            // Category listing remains public
+            if (path.startsWith('/api/v1/products/category/')) {
+                return true;
+            }
+
+            // Product details by numeric id remain public
+            if (/^\/api\/v1\/products\/\d+$/.test(path)) {
+                return true;
+            }
+
+            // Everything else under /products/* must be authenticated
+            return false;
         }
     }
 
@@ -82,7 +95,7 @@ module.exports = async function (req, res, next) {
     console.log(`[Auth] Checking path: ${cleanPath}`);
 
     // Allow public paths without authentication
-    if (isPublicPath(cleanPath)) {
+    if (isPublicPath(cleanPath, req.method)) {
         console.log(`[Auth] Public path - allowing without auth`);
         return next();
     }

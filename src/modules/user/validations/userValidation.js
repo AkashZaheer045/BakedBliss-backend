@@ -10,10 +10,10 @@ ValidationRules.rule = method => {
     switch (method) {
         case 'addFavorite': {
             return [
-                param('user_id')
+                param('id')
                     .exists()
                     .withMessage('User ID is required')
-                    .isString()
+                    .isInt({ min: 1 })
                     .withMessage('Invalid user ID format'),
 
                 body('productId')
@@ -24,36 +24,69 @@ ValidationRules.rule = method => {
             ];
         }
 
+        case 'addFavoriteSelf': {
+            return [
+                body('productId')
+                    .notEmpty()
+                    .withMessage('Product ID is required')
+                    .isInt({ min: 1 })
+                    .withMessage('Invalid product ID')
+            ];
+        }
+
         case 'removeFavorite': {
             return [
-                param('user_id')
+                param('id')
                     .exists()
                     .withMessage('User ID is required')
-                    .isString()
+                    .isInt({ min: 1 })
                     .withMessage('Invalid user ID format'),
 
                 param('product_id').isInt({ min: 1 }).withMessage('Invalid product ID')
             ];
         }
 
+        case 'removeFavoriteSelf': {
+            return [param('product_id').isInt({ min: 1 }).withMessage('Invalid product ID')];
+        }
+
         case 'listFavorites': {
             return [
-                param('user_id')
+                param('id')
                     .exists()
                     .withMessage('User ID is required')
-                    .isString()
+                    .isInt({ min: 1 })
                     .withMessage('Invalid user ID format')
             ];
         }
 
+        case 'listFavoritesSelf': {
+            return [];
+        }
+
         case 'updateProfile': {
             return [
-                param('user_id')
+                param('id')
                     .exists()
                     .withMessage('User ID is required')
-                    .isString()
+                    .isInt({ min: 1 })
                     .withMessage('Invalid user ID format'),
 
+                body('fullName')
+                    .optional()
+                    .trim()
+                    .isLength({ min: 2, max: 100 })
+                    .withMessage('Name must be between 2 and 100 characters'),
+
+                body('phoneNumber')
+                    .optional()
+                    .matches(/^\+?\d{10,15}$/)
+                    .withMessage('Invalid phone number format')
+            ];
+        }
+
+        case 'updateProfileSelf': {
+            return [
                 body('fullName')
                     .optional()
                     .trim()

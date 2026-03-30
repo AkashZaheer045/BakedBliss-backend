@@ -38,7 +38,7 @@ const sendSuccess = (res, data, message = 'Success', statusCode = 200) => {
  */
 const signUpUser = async (req, res) => {
     try {
-        const { fullName, email, password, profilePicture, addresses, selectedAddressId, phoneNumber, role } =
+        const { fullName, email, password, profilePicture, addresses, selectedAddressId, phoneNumber } =
             req.body;
 
         const [result, error] = await AuthService.signUp({
@@ -49,7 +49,7 @@ const signUpUser = async (req, res) => {
             addresses,
             selectedAddressId,
             phoneNumber,
-            role
+            role: 'user'
         });
 
         if (error) {
@@ -257,7 +257,7 @@ const refreshToken = async (req, res) => {
 const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
-        const userId = req.user?.user_id || req.userId;
+        const userId = req.user?.id || req.userId;
 
         if (!userId) {
             return sendError(res, { status: 401, message: 'Authentication required' });

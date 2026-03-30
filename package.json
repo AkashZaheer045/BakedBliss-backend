@@ -16,8 +16,10 @@
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write \"**/*.js\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.js\" --ignore-path .gitignore",
-    "db:migrate": "npx sequelize-cli db:migrate",
-    "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "migrate": "npx sequelize-cli db:migrate --env development",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo --env development",
+    "db:migrate": "npm run migrate",
+    "db:migrate:undo": "npm run migrate:undo",
     "db:seed": "npx sequelize-cli db:seed:all",
     "db:seed:undo": "npx sequelize-cli db:seed:undo:all",
     "build": "npx sequelize-cli db:migrate"

@@ -7,6 +7,10 @@ const ProductService = require('../services/productService');
 // Create product
 const createProduct = async (req, res) => {
     try {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({ status: 'error', message: 'Admin access required' });
+        }
+
         const {
             title,
             price,
@@ -77,6 +81,10 @@ const createProduct = async (req, res) => {
 // Update product
 const updateProduct = async (req, res) => {
     try {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({ status: 'error', message: 'Admin access required' });
+        }
+
         const { product_id } = req.params;
         const {
             title,

@@ -1,0 +1,223 @@
+{
+  "info": {
+    "name": "BakedBliss Backend APIs",
+    "_postman_id": "bakedbliss-backend-collection",
+    "description": "Collection of backend API endpoints for BakedBliss (local testing). Set the variable `baseUrl` to your server (default http://localhost:3000). Put a Firebase ID token into `authToken` when calling protected endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Sign Up (create user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"phoneNumber\": \"+1234567890\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/users/register", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","users","register"] }
+          }
+        },
+        {
+          "name": "Sign In (by userId)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"user_...\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/users/signin", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","users","signin"] }
+          }
+        },
+        {
+          "name": "Social Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"social_123\",\n  \"fullName\": \"Social User\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/users/social-login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","users","social-login"] }
+          }
+        },
+        {
+          "name": "Get User Profile (protected)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/users/profile/:user_id", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","users","profile",":user_id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?page=1&limit=12", "host": ["{{baseUrl}}"], "path": ["api","v1","products"], "query": [{"key":"page","value":"1"},{"key":"limit","value":"12"}] }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/products/search?query=donut", "host": ["{{baseUrl}}"], "path": ["api","v1","products","search"], "query": [{"key":"query","value":"donut"}] }
+          }
+        },
+        {
+          "name": "Get Categories",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/v1/products/categories", "host": ["{{baseUrl}}"], "path": ["api","v1","products","categories"] } }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/v1/products/:product_id", "host": ["{{baseUrl}}"], "path": ["api","v1","products",":product_id"] } }
+        },
+        {
+          "name": "Get Products by Category",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/v1/products/category/:category_name", "host": ["{{baseUrl}}"], "path": ["api","v1","products","category",":category_name"] } }
+        },
+        {
+          "name": "Trending Products",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/v1/products/trending", "host": ["{{baseUrl}}"], "path": ["api","v1","products","trending"] } }
+        },
+        {
+          "name": "Recommendations (protected)",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/products/recommendations/:userId", "host": ["{{baseUrl}}"], "path": ["api","v1","products","recommendations",":userId"] } }
+        },
+        {
+          "name": "Create Product (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Test Product\",\n  \"price\": 100,\n  \"category\": \"Snacks\",\n  \"stock\": 50\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/products/upload", "host": ["{{baseUrl}}"], "path": ["api","v1","products","upload"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Submit Contact Form",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"message\": \"Hello, I have a question.\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/contact/contact-us", "host": ["{{baseUrl}}"], "path": ["api","v1","contact","contact-us"] } }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Add Item to Cart (protected)",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"productId\": \"<productId>\",\n  \"quantity\": 2\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/cart/add", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","add"] } }
+        },
+        {
+          "name": "View Cart (protected)",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/cart/view", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","view"] } }
+        },
+        {
+          "name": "Update Cart Item (protected)",
+          "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"productId\": \"<productId>\",\n  \"quantity\": 3\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/cart/update", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","update"] } }
+        },
+        {
+          "name": "Remove Item from Cart (protected)",
+          "request": { "method": "DELETE", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"productId\": \"<productId>\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/cart/remove", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","remove"] } }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Confirm Order (protected)",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"cartItems\": [{ \"productId\": \"<id>\", \"quantity\": 2 }],\n  \"deliveryAddress\": { \"line1\": \"123 Street\", \"city\": \"City\" }\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/order/confirm", "host": ["{{baseUrl}}"], "path": ["api","v1","order","confirm"] } }
+        },
+        {
+          "name": "Order History (protected)",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/order/history", "host": ["{{baseUrl}}"], "path": ["api","v1","order","history"] } }
+        },
+        {
+          "name": "Order Status (protected)",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/order/status/:orderId", "host": ["{{baseUrl}}"], "path": ["api","v1","order","status",":orderId"] } }
+        }
+      ]
+    },
+    {
+      "name": "Address",
+      "item": [
+        {
+          "name": "Add Address (protected)",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"address\": { \"line1\": \"12 Baker St\", \"city\": \"City\" }\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/address/add", "host": ["{{baseUrl}}"], "path": ["api","v1","address","add"] } }
+        },
+        {
+          "name": "Update Address (protected)",
+          "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"addressId\": 0,\n  \"updatedAddress\": { \"line1\": \"New line\" }\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/address/update", "host": ["{{baseUrl}}"], "path": ["api","v1","address","update"] } }
+        },
+        {
+          "name": "Delete Address (protected)",
+          "request": { "method": "DELETE", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"addressId\": 0\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/address/delete", "host": ["{{baseUrl}}"], "path": ["api","v1","address","delete"] } }
+        },
+        {
+          "name": "View Addresses (protected)",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/address/view", "host": ["{{baseUrl}}"], "path": ["api","v1","address","view"] } }
+        }
+      ]
+    },
+    {
+      "name": "User - Favorites",
+      "item": [
+        {
+          "name": "List Favorites (protected)",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/users/:user_id/favorites", "host": ["{{baseUrl}}"], "path": ["api","v1","users",":user_id","favorites"] } }
+        },
+        {
+          "name": "Add Favorite (protected)",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{authToken}}"}], "body": { "mode": "raw", "raw": "{\n  \"productId\": \"<productId>\"\n}" }, "url": { "raw": "{{baseUrl}}/api/v1/users/:user_id/favorites", "host": ["{{baseUrl}}"], "path": ["api","v1","users",":user_id","favorites"] } }
+        },
+        {
+          "name": "Remove Favorite (protected)",
+          "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/users/:user_id/favorites/:product_id", "host": ["{{baseUrl}}"], "path": ["api","v1","users",":user_id","favorites",":product_id"] } }
+        }
+      ]
+    }
+  ]
+}

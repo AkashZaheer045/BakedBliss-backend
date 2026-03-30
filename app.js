@@ -202,28 +202,35 @@ app.use(errorHandler);
 const os = require('os');
 const sequelize = require('./db/sequelize/sequelize');
 
-console.log('Server host:', os.hostname());
+const startServer = () => {
+    console.log('Server host:', os.hostname());
 
-sequelize.connection.authenticate()
-    .then(function () {
-        console.log('DB Connection Successful');
+    sequelize.connection.authenticate()
+        .then(function () {
+            console.log('DB Connection Successful');
 
-        app.listen(process.env.PORT, function (error) {
-            if (error) {
-                console.log('Server is not listening...', error);
-            } else {
-                console.log(
-                    'Server is listening on HOST',
-                    os.hostname(),
-                    'on PORT',
-                    process.env.PORT
-                );
-            }
+            app.listen(process.env.PORT, function (error) {
+                if (error) {
+                    console.log('Server is not listening...', error);
+                } else {
+                    console.log(
+                        'Server is listening on HOST',
+                        os.hostname(),
+                        'on PORT',
+                        process.env.PORT
+                    );
+                }
+            });
+        })
+        .catch(function (error) {
+            console.log('Unable to connect to database', error);
         });
-    })
-    .catch(function (error) {
-        console.log('Unable to connect to database', error);
-    });
+};
+
+if (require.main === module) {
+    startServer();
+}
 
 //------------------------------------//
 module.exports = app;
+module.exports.startServer = startServer;

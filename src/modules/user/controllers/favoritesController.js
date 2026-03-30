@@ -7,12 +7,19 @@ const UserService = require('../services/userService');
 // Add product to user's favorites
 const addFavorite = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id, 10);
+        const authenticatedUserId = req.user?.id;
+        const requestedId = req.params.id ? parseInt(req.params.id, 10) : null;
         const { productId } = req.body;
 
-        if (!req.user || req.user.id !== userId) {
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
+
+        if (requestedId && requestedId !== authenticatedUserId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
+
+        const userId = authenticatedUserId;
 
         if (!productId) {
             return res.status(400).json({ status: 'error', message: 'productId is required' });
@@ -49,12 +56,19 @@ const addFavorite = async (req, res) => {
 // Remove product from favorites
 const removeFavorite = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id, 10);
+        const authenticatedUserId = req.user?.id;
+        const requestedId = req.params.id ? parseInt(req.params.id, 10) : null;
         const productId = parseInt(req.params.product_id, 10);
 
-        if (!req.user || req.user.id !== userId) {
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
+
+        if (requestedId && requestedId !== authenticatedUserId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
+
+        const userId = authenticatedUserId;
 
         const [_success, error] = await UserService.removeFavorite(userId, productId);
 
@@ -75,11 +89,18 @@ const removeFavorite = async (req, res) => {
 // List user's favorites
 const listFavorites = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id, 10);
+        const authenticatedUserId = req.user?.id;
+        const requestedId = req.params.id ? parseInt(req.params.id, 10) : null;
 
-        if (!req.user || req.user.id !== userId) {
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
+
+        if (requestedId && requestedId !== authenticatedUserId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
+
+        const userId = authenticatedUserId;
 
         const [favorites, error] = await UserService.listFavorites(userId);
 

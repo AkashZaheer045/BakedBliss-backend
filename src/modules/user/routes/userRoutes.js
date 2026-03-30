@@ -19,6 +19,11 @@ const routes = function () {
     //------------------------------------//
 
     router
+        .route('/profile')
+        .get(getUserProfile)
+        .put(userRules.rule('updateProfileSelf'), Validation.validate, updateUserProfile);
+
+    router
         .route('/profile/:id')
         .get(getUserProfile)
         .put(userRules.rule('updateProfile'), Validation.validate, updateUserProfile);
@@ -26,6 +31,16 @@ const routes = function () {
     //------------------------------------//
     // FAVORITES ROUTES (auth handled centrally)
     //------------------------------------//
+
+    // Self-scoped favorites routes (no user id in path)
+    router
+        .route('/favorites')
+        .post(userRules.rule('addFavoriteSelf'), Validation.validate, addFavorite)
+        .get(userRules.rule('listFavoritesSelf'), Validation.validate, listFavorites);
+
+    router
+        .route('/favorites/:product_id')
+        .delete(userRules.rule('removeFavoriteSelf'), Validation.validate, removeFavorite);
 
     // Add to favorites
     router

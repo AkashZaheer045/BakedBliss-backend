@@ -7,7 +7,18 @@ const UserService = require('../services/userService');
 // Get user profile
 const getUserProfile = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id, 10);
+        const authenticatedUserId = req.user?.id;
+        const requestedIdRaw = req.params.id || req.params.user_id;
+
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
+
+        if (requestedIdRaw && parseInt(requestedIdRaw, 10) !== authenticatedUserId) {
+            return res.status(403).json({ status: 'error', message: 'Forbidden' });
+        }
+
+        const userId = authenticatedUserId;
 
         const [profile, error] = await UserService.getUserProfile(userId);
 
@@ -32,13 +43,19 @@ const getUserProfile = async (req, res) => {
 // Update user profile
 const updateUserProfile = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id, 10);
-        const { fullName, phoneNumber, profilePicture } = req.body;
+        const authenticatedUserId = req.user?.id;
+        const requestedIdRaw = req.params.id || req.params.user_id;
 
-        // Ensure authenticated user matches path user
-        if (!req.user || req.user.id !== userId) {
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
+
+        if (requestedIdRaw && parseInt(requestedIdRaw, 10) !== authenticatedUserId) {
             return res.status(403).json({ status: 'error', message: 'Forbidden' });
         }
+
+        const userId = authenticatedUserId;
+        const { fullName, phoneNumber, profilePicture } = req.body;
 
         const [profile, error] = await UserService.updateUserProfile(userId, {
             fullName,

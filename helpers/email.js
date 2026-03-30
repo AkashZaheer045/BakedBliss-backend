@@ -27,18 +27,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Verify connection on startup
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('❌ Email service failed:', error.message);
-    } else {
-        const host = process.env.SMTP_HOST || 'smtp.ethereal.email';
-        console.log(`✅ Email service ready (${host})`);
-        if (host === 'smtp.ethereal.email') {
-            console.log('📧 Using Ethereal for testing - view emails at https://ethereal.email/messages');
+// Verify SMTP only outside tests to avoid open-handle leaks in Jest.
+if (process.env.NODE_ENV !== 'test') {
+    transporter.verify((error, success) => {
+        if (error) {
+            console.error('❌ Email service failed:', error.message);
+        } else {
+            const host = process.env.SMTP_HOST || 'smtp.ethereal.email';
+            console.log(`✅ Email service ready (${host})`);
+            if (host === 'smtp.ethereal.email') {
+                console.log('📧 Using Ethereal for testing - view emails at https://ethereal.email/messages');
+            }
         }
-    }
-});
+    });
+}
 
 /**
  * Send generic email

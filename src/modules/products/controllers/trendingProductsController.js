@@ -26,7 +26,18 @@ const getTrendingProducts = async (req, res) => {
 // Get recommendations
 const getRecommendations = async (req, res) => {
     try {
-        const userId = req.params.userId;
+        const authenticatedUserId = req.user?.id;
+        const requestedUserId = req.params.userId ? parseInt(req.params.userId, 10) : null;
+
+        if (!authenticatedUserId) {
+            return res.status(401).json({ status: 'error', message: 'Authentication required' });
+        }
+
+        if (requestedUserId && requestedUserId !== authenticatedUserId) {
+            return res.status(403).json({ status: 'error', message: 'Forbidden' });
+        }
+
+        const userId = authenticatedUserId;
 
         const [products, error] = await ProductService.getRecommendations(userId);
 

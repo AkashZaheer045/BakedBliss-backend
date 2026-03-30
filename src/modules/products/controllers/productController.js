@@ -214,6 +214,10 @@ const getCategories = async (req, res) => {
 // Delete product
 const deleteProduct = async (req, res) => {
     try {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({ status: 'error', message: 'Admin access required' });
+        }
+
         const { product_id } = req.params;
 
         const [_success, error] = await ProductService.deleteProduct(product_id);

@@ -13,7 +13,7 @@ jest.mock('../../src/modules/address/services/addressService', () => ({
 
 // Mock auth middleware
 jest.mock('../../middleware/auth.js', () => (req, res, next) => {
-    req.user = { userId: 'user_123', email: 'test@example.com' };
+    req.user = { id: 123, email: 'test@example.com' };
     next();
 });
 
