@@ -18,6 +18,10 @@ const { errorHandler } = require('./middleware/response_handler');
 const { apiLimiter } = require('./middleware/rate_limiter');
 // const { activityLogger } = require('./middleware/activity_logger');
 
+// Swagger imports
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+
 //------------------------------------//
 // CORS Configuration
 //------------------------------------//
@@ -33,6 +37,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Static Files
 //------------------------------------//
 app.use('/uploads', express.static(__dirname + '/uploads'));
+
+//------------------------------------//
+// Swagger Documentation
+// API docs available at /api-docs
+//------------------------------------//
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'BakedBliss API Documentation'
+}));
 
 //------------------------------------//
 // Global Rate Limiting
