@@ -26,6 +26,7 @@ const allPaths = {
 };
 
 const options = {
+    apis: [], // No JSDoc scanning needed - using modular spec files
     definition: {
         openapi: '3.0.0',
         info: {
